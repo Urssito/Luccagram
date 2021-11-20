@@ -1,0 +1,122 @@
+.profile-header{
+    margin: 10px 0 10px 0;
+}
+
+.profile-header-div{
+    display: flex;
+    width: 100%;
+    padding: 0 0 3px 0;
+}
+
+.username-text{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 90%;
+    font-size: 30px;
+    height: 150px;
+}
+
+.username-text a{
+    margin: 0 0 0 8px;
+    font-size: 16px;
+    padding: 2px 4px;
+    background-color: #fff;
+    border: 1px solid #888;
+    color: #000;
+    font-weight: bolder;
+}
+
+.username-text a:hover{
+    background-color: #555;
+    border: 1px solid #fff;
+}
+.username-text a:active{
+    background-color: #222;
+}
+
+
+.span-edit-profile{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    width: 10%;
+}
+
+.profilePhoto{
+    width: 60px;
+    border-radius: 50%;
+    padding: 2px;
+}
+
+.profilePic{
+    width: 170px;
+    border-radius: 50%;
+    margin: 30px;
+}
+
+.edit-profile-div{
+    display: flex;
+    flex-direction: row;
+    justify-content:space-between;
+    background-color: #fff;
+    border-radius: 6px;
+    padding: 20px;
+    flex-wrap: wrap;
+}
+
+.edit-profile-title{
+    font-weight: bolder;
+    margin: 0 0 4px 0;
+    width: 100%;
+}
+
+.edit-profile-element{
+    font-weight: bold;
+    margin: 20px;
+}
+
+.edit-profile-group{
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border-bottom: 1px solid #bbb;
+}
+
+.edit-profile-div form{
+    width: 100%;
+}
+
+.edit-profile-element::placeholder{
+    font-weight: lighter;
+}
+
+.edit-profile-submit-div{
+    display: flex;
+    justify-content: center;
+}
+
+.edit-profile-submit{
+    background-color: rgb(14, 95, 161);
+    border-style: none;
+    border-radius: 3px;
+    color: #fff;
+    padding: 5px;
+    width: 15%;
+}
+
+textarea{
+    font-weight: lighter !important;
+}
+
+.edit-profile-progress-div{
+    display: flex;
+    width: 100%;
+}
+
+#progress{
+    width: 0%;
+    height: 10px;
+    margin: 4px 0;
+    border-radius: 3px;
+}

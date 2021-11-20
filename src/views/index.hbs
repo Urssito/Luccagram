@@ -1,0 +1,76 @@
+{{#if user}}
+<div class="col-xs-12">
+    {{#each publications}}
+        <div class="row-md-1 m-3 center-block">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title d-flex justify-content-between align-items-center header">
+                        <div>
+                            <img class="profilePhoto" src="img/main/profilePhoto.jpg" alt="{{user}}">
+                            <strong>{{user}}</strong>
+                        </div>
+                        <div class="op-btn-div getId" id="btn{{@index}}">
+                                <button class="op-btn getId" id="btn{{@index}}">
+                                <circle class="getId" id="btn{{@index}}"></circle>
+                                <circle class="getId" id="btn{{@index}}"></circle>
+                                <circle class="getId" id="btn{{@index}}"></circle>
+                            </button>
+                        </div>
+                        <div class="dropInactive getId menu-div" id="menu{{@index}}">
+                            <div class="menu">
+                                {{#when this.userId "eq" ../userIds }}
+                                <a href="/edit/{{_id}}" class="menu-element"><span class="menu-icon-div"><i class="fas fa-edit"></i></span>Editar</a>
+                                <form action="/delete/{{_id}}?_method=DELETE" method="POST">
+                                <button type="submit" name="delete-btn" class="menu-element"><span class="menu-icon-div"><i class="fas fa-trash-alt"></i></span>Eliminar</button>
+                                </form>
+                                {{/when}}
+                                <a class="menu-element" href="#"><span class="menu-icon-div"><i class="fas fa-user-alt"></i></span>Perfil</a>
+                                <a class="menu-element" href="#"><span class="menu-icon-div"><i class="fas fa-info"></i></span>Info</a>
+                            </div>
+                        </div>
+                        <h3>{{title}}</h3>
+                    </h4>
+                    <p class="d-flex justify-content-between align-items-center">
+                        {{ publication}}
+                    </p>
+                </div>
+            </div>
+        </div>
+    {{/each}}
+</div>
+
+{{else}}
+<div class="m-0 row justify-content-center login-card">
+    <div class="col-md-4 mx-auto">
+        <div class="card col d-flex justify-content-center">
+            <div class="card-header">
+                Ingresá
+            </div>
+            <div class="card-body">
+                <form action="/login" method="post">
+                    <div class="form-group">
+                        <input type="text" name="user" class="form-control" placeholder="usuario o email" autofocus>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" name="password" class="form-control" placeholder="contraseña">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            Ingresar
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="rem" name="remember"> <label for="rem" style="font-size: 14px;">Mantener sesión iniciada</label>
+                    </div>
+                    <div class="form-group">
+                        <a href="/forgetpass" class="d-flex w-50" style="font-size: 12px; float: left;">¿Olvidaste tu contraseña?</a>
+                        <a href="/signup" class="d-flex w-50" style="font-size: 12px; float: right; justify-content: right;">Registrarse</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{/if}}
+
+<script src="/javascript/option-btn.js"></script>

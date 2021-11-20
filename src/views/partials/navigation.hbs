@@ -1,0 +1,50 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+    <div class="container-fluid">
+
+      <a class="navbar-brand title" href="/">Luccagram</a>
+
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0" style="display: flex; width: 100%;">
+
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/upload">Subir</a>
+          </li>
+
+          <!-- Boton de búsqueda -->
+          <div class="d-flex" style="display: flex; width: 100%; margin: 2px 0 0 0;">
+              <form class="d-flex mx-auto">
+                  <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                  <button class="btn btn-outline-light" type="submit">Search</button>
+              </form>
+          </div>
+
+        </ul>
+
+        <!-- elementos a la derecha -->
+        <ul class="navbar-nav" style="display: flex; margin: 0 45px 0 0 !important;">
+          <!-- Drop Downs -->
+          <div class="dropdown">
+
+            <button class="btn btn-secondary bg-transparent dropdown-toggle" style="border-color: rgba(0,0,0,0);" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="far fa-heart"></i>
+            </button>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+
+              <a class="dropdown-item" href="/profile">Perfil</a>
+              <a class="dropdown-item" href="#">Guardados</a>
+              <a class="dropdown-item" href="/logout">Cerrar sesión</a>
+              
+            </div>
+          </div>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>

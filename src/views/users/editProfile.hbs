@@ -1,0 +1,32 @@
+<div class="edit-profile-div">
+
+    <form id="formFile" action="/profile/edit?_method=PUT" method="POST" enctype="multipart/form-data">
+        
+        <div class="edit-profile-progress-div progress">
+            <div id="progress" class="progress-bar progress-bar-striped" role="progressbar" ></div>
+        </div>
+
+        <div class="edit-profile-title">Editar perfil</div>
+
+        <div class="form-group edit-profile-group">
+            <span class="edit-profile-element">Cambiar nombre de usuario</span>
+            <input type="text" name="user" placeholder="Nombre de usuario" value="{{user.user}}">
+        </div>
+
+        <div class="form-group edit-profile-group">
+            <span class="edit-profile-element">Cambiar foto de Perfil</span>
+            <input id="file" class="edit-profile-element" accept="image/*" type="file" style="color: #fff;" name="image">
+        </div>
+
+        <div class="form-group edit-profile-group">
+            <span class="edit-profile-element">Descripción</span>
+            <textarea class="edit-profile-element" name="description" cols="60" rows="5" maxlength="250" placeholder="Cuentanos de ti...">{{user.description}}</textarea>
+        </div>
+
+        <div class="form-group edit-profile-submit-div">
+        <input type="submit" value="Guardar" class="edit-profile-submit">
+        </div>
+
+    </form>
+
+</div>
