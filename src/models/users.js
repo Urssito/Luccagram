@@ -14,10 +14,11 @@ const usuario = new Schema({
     date: {type: Date, default: Date.now},
     description: {type: String, required: true, default: "hola!"},
     Google: {
-        drivePath: {type: String, required: false}
+        drivePath: {type: String, required: false},
+        profilePicId: {type: String, required: false, default: ''}
     },
     profilePhoto: {
-        filename: {type: String, required: true, default: 'profilePhoto'},
+        filename: {type: String, required: true, default: 'profilePhoto.jpg'},
         path: {type: String, required: true, default: path.join(__dirname, '..', 'public', 'img', 'main')},
         ext: {type: String, required: true, default:'jpg'},
         parents: {type: Array, required: false}

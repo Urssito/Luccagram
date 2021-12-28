@@ -1,9 +1,6 @@
-{{#if user}}
-    {{> publication }}
-{{else}}
-<div class="m-0 row justify-content-center login-card">
+<div class="row">
     <div class="col-md-4 mx-auto">
-        <div class="card col d-flex justify-content-center">
+        <div class="card">
             <div class="card-header">
                 Ingresá
             </div>
@@ -21,9 +18,6 @@
                         </button>
                     </div>
                     <div class="form-group">
-                        <input type="checkbox" id="rem" name="remember"> <label for="rem" style="font-size: 14px;">Mantener sesión iniciada</label>
-                    </div>
-                    <div class="form-group">
                         <a href="/forgetpass" class="d-flex w-50" style="font-size: 12px; float: left;">¿Olvidaste tu contraseña?</a>
                         <a href="/signup" class="d-flex w-50" style="font-size: 12px; float: right; justify-content: right;">Registrarse</a>
                     </div>
@@ -32,6 +26,3 @@
         </div>
     </div>
 </div>
-{{/if}}
-
-<script src="/javascript/option-btn.js"></script>

@@ -3,15 +3,14 @@ const passport = require("passport");
 const router = express.Router();
 const path = require("path");
 const fs = require("fs");
-const { google } = require("googleapis")
+const sharp = require("sharp");
 
 const objUser = require("../models/users");
+const objPublication = require("../models/publications")
 const multer = require("multer");
 const storage = require("../config/diskStorage");
-const { db } = require("../models/users");
 const upload = multer({storage: storage});
-const drive = require("../config/googleAuth");
-const { ajax } = require("jquery");
+const { isAuthenticated } = require("../helpers/auth");
 
 router.get("/signup", (req,res) => {
 
@@ -19,9 +18,10 @@ router.get("/signup", (req,res) => {
 
 });
 
-router.post("/signup", async(req,res) => {
+router.post("/signup", async (req, res) => {
 
     const { user, password, confirmPassword, email } = req.body;
+    const drive = require("../config/googleAPI");
     const errors = []
     if(password && confirmPassword && password != confirmPassword){
         errors.push({text: "las contraseñas no coinciden"});
@@ -60,13 +60,12 @@ router.post("/signup", async(req,res) => {
             newUser.password = await newUser.encryptPassword(password);
             newUser.save();
             const userId = newUser.id;
-            const dir = path.join(__dirname, "..", "public", "img", "users", userId)
             const fileMetadata = {
                 'name': userId,
                 'mimeType': 'application/vnd.google-apps.folder',
                 'parents': ['1-PRGl6OPxvGb0X5mkeNd8sULHrILm2vo']
             }
-            await drive.files.create({
+            const folder =  await drive.files.create({
                 resource: fileMetadata,
                 fields: 'id'
             }, async function (err, file) {
@@ -83,8 +82,9 @@ router.post("/signup", async(req,res) => {
                 }
             })
             req.flash("successMsg", "cuenta creada exitosamente!");
-            res.redirect("/profile");}
+            res.redirect("/")
         }
+    }
 
 });
 
@@ -113,49 +113,89 @@ router.get("/profile/edit", (req, res) => {
 
 });
 
-router.put("/profile/edit", upload.single("image"), async(req,res) => {
+router.put("/profile/editsuccess", upload.single("image"), async (req,res) => {
 
-    const { user, description} = req.body;
+    const { user, description, imgDim} = req.body;
+    const drive = require("../config/googleAPI")
     const objUser = require("../models/users");
     const publications = require("../models/publications");
-    const userId = req.user.id;
-    console.log("usuario: ", user, "\ndescripcion: ", description);
+    const actualUser = await objUser.findOne({id: req.user.id});
+    upload.single("image");
+    let error = false;
 
     // Profile Photo
-    if(req.file){
+
+    if(req.file) {
+        console.log(req.file)
         const ext = req.file.filename.split('.').pop();
-        const filePath = path.join(__dirname, '..','public','img','temp', `profile${req.user.id}.${ext}`);
-        console.log(req.file);
+        const originalFile = path.join(__dirname, '..', 'public', 'img', 'users', 'temp', req.file.filename);
+
+        //save and crop image
+        if(fs.existsSync(originalFile)){
+            const rawData = imgDim.split(" ");
+            const data = rawData.map(elem => parseInt(elem,10));
+            const outputImg = `temp${req.user.id}.${ext}`
+            const imgDir = path.join(__dirname, '..', 'public', 'img', 'users', 'temp', outputImg);
+            await sharp(originalFile).extract({left: data[0], top: data[1], width: data[2], height: data[2]}).toFile(imgDir)
+                .then(() =>{
+                    console.log("imagen cortada!");
+                }).catch(err => console.error(err));
+
+        }
+
+        //Save file in Google Drive
+
+        console.log("subiendo...")
         
+        const filePath = path.join(__dirname, '..','public','img', 'users','temp', `temp${req.user.id}.${ext}`);
+    
         if(ext == 'jpg' || ext == 'jpeg' || ext == 'png'){
-            const response = await drive.files.create({
+
+            const file = await drive.files.create({
                 requestBody: {
-                    name: 'profilePhoto.' + ext,
-                    mimeType: 'image/jpg',
+                    name: `profilePhoto.${ext}`,
+                    mimeType: `image/${ext}`,
+                    role: 'reader',
+                    type: 'anyone',
                     parents: [req.user.Google.drivePath]
                 },
                 media: {
-                    mimeType: 'image/jpg',
-                    body: fs.createReadStream(filePath)
+                    mimeType: `image/${ext}`,
+                    body:fs.createReadStream(filePath)
+                            .on('end', () => console.log('imagen lista'))
+                            .on('error', err => console.error(err))
                 }
-            });
-            const userDb = objUser.findById(user.id);
-            userDb.profilePhoto.parents = [req.user.Google.drivePath];
-            userDb.profilePhoto.ext = ext;
+            })
+            .catch(console.error);
+
+            if(req.user.Google.profilePicId = ''){
+                await drive.files.delete({
+                    'fileId': req.user.Google.profilePicId
+                })
+            }
+         
+            const profilePicId = file.data.id;
+            const Google = {
+                profilePicId: profilePicId,
+                drivePath: req.user.Google.drivePath
+            }
+            objUser.findByIdAndUpdate(req.user.id, {Google}, (err, result) => {
+                if (err) console.log("hubo un error al actualizar el objeto usuario: \n",err);
+                else console.log('el archivo se subió de forma exitosa');
+            })
             fs.unlinkSync(filePath);
+            fs.unlinkSync(originalFile);
 
         }else{
-            errors = []
-            errors.push({text: "la imagen debe ser en formato jpg, jpeg o png."});
-            res.render("users/signup", {errors, user, email, password, confirmPassword});
-        }
-        
-        console.log(response.data);
 
+            error = true;
+            req.flash("errorMsg", "El formato de imagen debe ser .jpg, .jpeg o .png");
+            res.redirect("/profile/edit");
+        }
     }
 
+
     // Description
-    const actualUser = await objUser.findOne({id: userId});
     actualUser.description = description;
 
     // Username
@@ -164,9 +204,24 @@ router.put("/profile/edit", upload.single("image"), async(req,res) => {
     }
 
     await objUser.findByIdAndUpdate(req.user.id, {user, description});
-    await publications.findOneAndUpdate({userId: req.user.id}, {user: user})
+    await publications.findOneAndUpdate({userId: req.user.id}, {user: user});
+    
+    if(!error){
+        req.flash("successMsg", "Foto de perfil guardada con éxito!")
+        res.redirect("/profile")
+    }
+});
 
-    res.redirect("/profile");
+router.get("/user/*", isAuthenticated, async(req, res) => {
+
+    const urlParse = req.url.split("/").pop();
+    const user = await objUser.findOne({user: urlParse}).lean();
+    const currentUser = await objUser.findOne(req.user).lean();
+
+    if(user){
+        const publications = await objPublication.find({ user: urlParse}).lean().sort({date: "desc"});
+        res.render("publications/allPublications", { publications, user, currentUser });
+    }else res.send("Usuario no encontrado.")
 });
 
 module.exports = (router);

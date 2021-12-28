@@ -1,8 +1,5 @@
 const Handlebars = require ("handlebars")
-const fs = require("fs");
-const path = require("path");
-const usersDb = require("../models/users");
-const { drive } = require("googleapis/build/src/apis/drive");
+
 
 const compareHelper = Handlebars.registerHelper( "when",function(operand_1, operator, operand_2, options) {
     var operators = {
@@ -30,18 +27,15 @@ const lenghtobj = Handlebars.registerHelper('get_length', function (obj) {
     return obj.length;
 });
 
-/*const returnImg = Handlebars.registerHelper( 'picProfile', function(id){
-    require("../config/googleAuth");
-    const user = usersDb.findById(id)
-    let dir = "https://drive.google.com/drive/u/1/folders/" + user.Google.drivePath
-    async.doWhilst((callback) => {
-        drive.files.list({
-            q: "name='profilePhoto'"
-        })
-    })
-});*/
+const profilePic = Handlebars.registerHelper('profilePic', function (picture) {
+    if(picture){
+        return `https://drive.google.com/uc?export=view&id=${picture}`
+    }else{
+        return "/img/main/profilePhoto.jpg";
+    }
+})
 
-//module.exports = returnImg;
 module.exports = lenghtobj;
 module.exports = forbucle;
 module.exports = compareHelper;
+module.exports = profilePic;

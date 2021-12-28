@@ -11,7 +11,7 @@ passport.use(new LocalStrategy({
     const user =  await objUser.findOne({user: username});
     //if (err) return done(err);
     if(!user ) {
-        return done(null, false, {message: "el usuario o correo incorrecto"});
+        return done(null, false, {message: "usuario incorrecto o inexistente"});
     }else {
         const match = await user.matchPassword(password);
         if(match) {

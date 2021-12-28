@@ -1,45 +1,22 @@
+            <!-- Profile Header -->
+
 <div class="card profile-header">
     
     <div class="profile-header-div">
-        <img class="profilePic" src="img/main/profilePhoto.jpg" alt="{{user.user}}">
-        <span class="username-text">{{user.user}}<a href="/profile/edit" class="btn btn-primary edit-profile-button">Editar perfil</a></span>
+        <img class="profilePic" src="{{profilePic user.Google.profilePicId}}" alt="{{user.user}}">
+        <span class="username-text">
+            {{user.user}}
+            {{#when user.user 'eq' currentUser.user}}
+            <a href="/profile/edit" class="btn btn-primary edit-profile-button">Editar perfil</a>
+            {{/when}}
+        </span>
     </div>
     <p class="profile-description">{{user.description}}</p>
 </div>
-
+            <!-- user's publications -->
 <div class="col-xs-12">
-    {{#each publications}}
-        <div class="row-md-1 m-3 center-block">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title d-flex justify-content-between align-items-center header">
-                        <strong>{{user}}</strong>
-                        <div class="op-btn-div getId" id="btn{{@index}}">
-                                <button class="op-btn getId" id="btn{{@index}}">
-                                <circle class="getId" id="btn{{@index}}"></circle>
-                                <circle class="getId" id="btn{{@index}}"></circle>
-                                <circle class="getId" id="btn{{@index}}"></circle>
-                            </button>
-                        </div>
-                        <div class="dropInactive getId menu-div" id="menu{{@index}}">
-                            <div class="menu">
-                                {{#when this.userId "eq" ../userIds }}
-                                <a href="/edit/{{_id}}" class="menu-element"><span class="menu-icon-div"><i class="fas fa-edit"></i></span>Editar</a>
-                                {{/when}}
-                                <form action="/delete/{{_id}}?_method=DELETE" method="POST">
-                                <button type="submit" name="delete-btn" class="menu-element"><span class="menu-icon-div"><i class="fas fa-trash-alt"></i></span>Eliminar</button>
-                                </form>
-                            </div>
-                        </div>
-                        <h3>{{title}}</h3>
-                    </h4>
-                    <p class="d-flex justify-content-between align-items-center">
-                        {{ publication}}
-                    </p>
-                </div>
-            </div>
-        </div>
-
+    {{#if publications}}
+        {{> publication}}
     {{else}}
         <div class="card mx-auto">
             <div class="card-body">
@@ -47,5 +24,5 @@
                 <a href="/upload" class="btn btn-success btn-block">Publica algo!</a>
             </div>
         </div>
-    {{/each}}
+    {{/if}}
 </div>

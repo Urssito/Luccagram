@@ -1,8 +1,7 @@
 const express = require("express");
-const { findByIdAndDelete } = require("../models/publications");
 const router = express.Router();
 
-const M_publicacion = require("../models/publications")
+const objPublication = require("../models/publications")
 const { isAuthenticated } = require("../helpers/auth");
 
 router.get("/upload", isAuthenticated, (req,res) => {
@@ -26,9 +25,10 @@ router.post("/upload", isAuthenticated, async(req, res) => {
         res.render("publications/newPublications", {errors, title, publication})
     }else{
         
-        const newPublication = new M_publicacion({title, publication});
+        const newPublication = new objPublication({title, publication});
         newPublication.userId = req.user.id;
         newPublication.user = req.user.user;
+        if(req.user.Google.profilePicId) newPublication.profilePic = req.user.Google.profilePicId;
         await newPublication.save();
         req.flash("successMsg", "Nota agregada exitosamente!");
         res.redirect("/profile");
@@ -37,17 +37,9 @@ router.post("/upload", isAuthenticated, async(req, res) => {
     
 });
 
-router.get("/profile", isAuthenticated, async(req, res) => {
-
-    const publications = await M_publicacion.find({ userId: req.user.id}).lean().sort({date: "desc"});
-    console.log("cookies: ", req.cookies);
-    res.render("publications/allPublications", { publications });
-
-});
-
 router.get("/edit/:id", isAuthenticated, async(req, res) => {
 
-    const editNote = await M_publicacion.findById(req.params.id).lean();
+    const editNote = await objPublication.findById(req.params.id).lean();
     res.render("publications/editPublications", { editNote });
 
 });
@@ -55,15 +47,18 @@ router.get("/edit/:id", isAuthenticated, async(req, res) => {
 router.put("/editSuccess/:id", isAuthenticated, async(req, res) => {
 
     const { title, publication } = req.body;
-    await M_publicacion.findByIdAndUpdate(req.params.id, {title, publication});
+    console.log(req.body);
+    console.log(req.headers);
+    await objPublication.findByIdAndUpdate(req.params.id, {title, publication});
     res.redirect("/profile");
 
 });
 
 router.delete("/delete/:id", isAuthenticated, async(req,res) => {
 
-    await M_publicacion.findByIdAndDelete(req.params.id);
+    await objPublication.findByIdAndDelete(req.params.id);
     res.redirect("/profile")
 
 });
+
 module.exports = router;

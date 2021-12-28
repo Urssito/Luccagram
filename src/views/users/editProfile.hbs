@@ -1,6 +1,6 @@
 <div class="edit-profile-div">
 
-    <form id="formFile" action="/profile/edit?_method=PUT" method="POST" enctype="multipart/form-data">
+    <form id="formFile" action="/profile/editsuccess?_method=PUT" method="POST" enctype="multipart/form-data">
         
         <div class="edit-profile-progress-div progress">
             <div id="progress" class="progress-bar progress-bar-striped" role="progressbar" ></div>
@@ -14,13 +14,33 @@
         </div>
 
         <div class="form-group edit-profile-group">
-            <span class="edit-profile-element">Cambiar foto de Perfil</span>
-            <input id="file" class="edit-profile-element" accept="image/*" type="file" style="color: #fff;" name="image">
+            <div class="edit-profile-file-form">
+                <!-- cut image scripts -->
+
+                <link href="/css/cropper.css" rel="stylesheet">
+                <script src="/javascript/cropper.js"></script>
+                <script src="/javascript/cutPic.js" type="module"></script>
+                <!-- input -->
+                <span class="edit-profile-element" id="edit-profile-title-porfilePic">Cambiar foto de Perfil</span>
+                <div class="preview-div">
+                    <!-- Preview -->
+                    <div id="editor"></div>
+                    <input id="file" class="edit-profile-element" accept="image/*" type="file" name="image">
+                    <div id="div-editor-buttons">
+                        <label for="file" class="edit-profile-btn-save-ProfilePhoto"><span class="material-icons">file_upload</span>Examinar</label>
+                    </div>
+                    <canvas id="preview">
+                        
+                    </canvas>
+                    
+                </div>
+            </div>
+            <textarea id="imgDim" name="imgDim"></textarea>
         </div>
 
         <div class="form-group edit-profile-group">
             <span class="edit-profile-element">Descripción</span>
-            <textarea class="edit-profile-element" name="description" cols="60" rows="5" maxlength="250" placeholder="Cuentanos de ti...">{{user.description}}</textarea>
+            <textarea class="edit-profile-element" name="description" cols="60" rows="5" placeholder="Cuentanos de ti...">{{user.description}}</textarea>
         </div>
 
         <div class="form-group edit-profile-submit-div">

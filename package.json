@@ -17,10 +17,14 @@
   "dependencies": {
     "@google-cloud/storage": "^5.16.0",
     "@handlebars/allow-prototype-access": "^1.0.5",
+    "axios": "^0.24.0",
     "bcryptjs": "^2.4.3",
+    "body-parser": "^1.19.0",
     "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.5",
     "cookie-session": "^1.4.0",
+    "cors": "^2.8.5",
+    "cropperjs": "^1.5.12",
     "dependencies": "0.0.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
@@ -37,7 +41,11 @@
     "multer": "^1.4.3",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
-    "timeago.js": "^4.0.2"
+    "query-string": "^7.0.1",
+    "request": "^2.88.2",
+    "sharp": "^0.29.3",
+    "timeago.js": "^4.0.2",
+    "url-parse": "^1.5.3"
   },
   "bugs": {
     "url": "https://github.com/urssito/luccagram/issues"

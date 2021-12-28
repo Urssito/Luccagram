@@ -1,4 +1,3 @@
-console.log(2+2);
 let form = $('#formFile');
 form.on("submit",() => {
     let inputFile = $("#file");

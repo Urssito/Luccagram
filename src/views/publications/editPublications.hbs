@@ -4,7 +4,7 @@
             <h2>Editar nota</h2>
         </div>
         <div class="card-body">
-            <form action="/editSuccess/{{editNote._id}}?_method=PUT" method="POST">
+            <form action="/editSuccess/{{editNote._id}}?_method=PUT" enctype="multipart/form-data" method="POST">
                 <div class="form-group">
                     <input type="text" name="title" class="form-control" placeholder="titulo" value="{{editNote.title}}">
                 </div>
