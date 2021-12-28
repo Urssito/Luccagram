@@ -4,12 +4,6 @@ const router = express.Router();
 const M_publicacion = require("../models/publications");
 const M_user = require("../models/users");
 
-router.get("/*", async(req, res) => {
-    if(req.user){
-        const currentUser = await M_user.findOne(req.user).lean();
-        
-    }
-})
 
 router.get("/", async(req, res) => {
     
