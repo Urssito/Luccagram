@@ -1,5 +1,35 @@
-.header{
-   border-bottom: 1px solid #222; 
+.card-publication{
+    background-color: #fff;
+    border-bottom: #888 1px solid;
+    padding: 10px;
+}
+
+.publication-header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin:0;
+}
+
+.user{
+    font-weight: 501;
+    text-decoration: none;
+    color: #000;
+}
+
+.user:hover{
+    color:#000;
+    text-decoration: none;
+}
+
+.user b:hover{
+    font-weight: 501;
+    text-decoration:underline;
+    color: #000;
+}
+
+#op-canvas{
+    position: absolute;
 }
 
 .op-btn-div{
@@ -40,20 +70,22 @@ circle{
 }
 
 .dropActive{
+    position: absolute;
     display: flex;
-    width: 96%;
+    width: 41.5%;
     justify-content: flex-end;
     z-index: 501;
 }
 
 .menu{
     display: flex;
+    position:static;
     flex-direction: column;
     border-radius: 4px;
     -webkit-box-shadow: 2px 2px 3px 1px rgba(0,0,0,.5);
     box-shadow: 2px 2px 3px 1px rgba(0,0,0,.5);
     padding: 2px;
-    width: 15%;
+    width: 30%;
 }
 
 .menu-element{
@@ -81,4 +113,61 @@ circle{
     background-color: #ccc;
     text-decoration: none;
     color: #111;
+}
+
+.div-content{
+    padding: 0 52px;
+}
+
+.publication-body{
+    padding: 0 0 15px 0;
+    margin: 0;
+    font-size: calc();
+}
+
+#interactions{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    padding: 10px 0 0 0;
+    border-top: #888 1px solid;
+}
+
+.likeBtn{
+    display: none;
+}
+
+.labelLikeBtn{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.heart-icon:hover{
+    transform: scale(1.1);
+    cursor: pointer;
+}
+
+.heart-icon{
+    color: rgba(0,0,0,.5);
+}
+
+.commentBtn{
+    border-style: none;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.comment-icon{
+    color: #666;
+}
+
+.interaction-text{
+    padding: 0 12px;
+}
+
+label > .interaction-text{
+    transform: translate(0,1px);
 }

@@ -168,11 +168,11 @@ router.put("/profile/editsuccess", upload.single("image"), async (req,res) => {
             })
             .catch(console.error);
 
-            if(req.user.Google.profilePicId = ''){
+            /*if(req.user.Google.profilePicId != ''){
                 await drive.files.delete({
                     'fileId': req.user.Google.profilePicId
                 })
-            }
+            }*/
          
             const profilePicId = file.data.id;
             const Google = {

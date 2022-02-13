@@ -9,15 +9,18 @@ const express = require("express"),
       request = require("request"),
       urlParse = require("url-parse"),
       queryParse = require("query-string"),
-      bodyParser = require("body-parser");
+      bodyParser = require("body-parser"),
+      fs = require('fs');
 
 // Initializations
 const app = express();
 const cookieParser = require("cookie-parser");
+const drive = require("./config/googleAPI");
 require("./helpers/hbsHelpers");
 require("./config/diskStorage");
-require("./database");
 require("./config/passport");
+require("./database");
+require("./helpers/updateSchemas.js");
 
 // settings
 app.set("port", process.env.PORT || 8080);
@@ -69,7 +72,8 @@ app.use(require("./routes/publications"));
 app.use(require("./routes/users"));
 
 // Static Files
-app.use(express.static(path.join(__dirname, "public")))
+app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname,'..','node_modules')));
 
 // Google Authorize
 const CLIENT_ID = '488466038777-9uv4j46ee2h81omv9tlhm42dsn1q79t0.apps.googleusercontent.com';
@@ -78,27 +82,35 @@ const REDIRECT_URI = 'http://localhost:8080/oauth2callback';
 
 app.get("/a", (req,res) => {
     
-    const oAuth2Clilent = new google.auth.OAuth2(
+    if(req.user && req.user.user == "urssito"){
+        const oAuth2Clilent = new google.auth.OAuth2(
         CLIENT_ID,
         CLIENT_SECRET,
         REDIRECT_URI
-    );
-    const scopes = ['https://www.googleapis.com/auth/drive.file'];
+        );
+        const scopes = ['https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive',
+        'https://www.googleapis.com/auth/drive.file',
+        'https://www.googleapis.com/auth/drive.metadata'
+      ];
 
-    const url = oAuth2Clilent.generateAuthUrl({
-        access_type: 'offline',
-        scope: scopes,
-        state: JSON.stringify({
-            callbackUrl: req.body.callbackUrl,
-            userId: req.body.userid
-        })
-    });
+        const url = oAuth2Clilent.generateAuthUrl({
+            access_type: 'offline',
+            scope: scopes,
+            state: JSON.stringify({
+                callbackUrl: req.body.callbackUrl,
+                userId: req.body.userid
+            })
+        });
 
-    request(url, (err, response, body) => {
-        if (err) console.error;
-        console.log("Status: ", res && res.statusCode);
-        res.send({ url })
-    });
+        request(url, (err, response, body) => {
+            if (err) console.error;
+            console.log("Status: ", res && res.statusCode);
+            res.send({ url })
+        });
+    }else{
+        res.redirect("/");
+    }
 
 });
 
@@ -115,9 +127,15 @@ app.get('/oauth2callback', async (req, res) => {
         );
 
         const token = await oAuth2Clilent.getToken(code);
+        
         console.log(token);
-        res.redirect("/")
+        const credentialsPath = path.join(__dirname,'..','credentials.json');
+        const credentials = JSON.parse(fs.readFileSync(credentialsPath));
+        credentials.web.access_token = token.tokens.access_token;
+        credentials.web.refresh_token = token.tokens.refresh_token;
+        fs.writeFileSync(credentialsPath, JSON.stringify(credentials));
 
+        res.redirect("/");
 
     }else{
         res.redirect('activateGoogleAPI');

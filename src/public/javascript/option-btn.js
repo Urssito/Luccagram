@@ -2,14 +2,11 @@ $(".getId").on("click", (e) => {
     let num = null;
     let id = e.target.getAttribute("id");
 
-    num = id.slice(3);
+    num = id.split('n')[1];
     menu = "#menu" + num;
     $(menu).addClass("dropActive");
     
-    let height = $(document).height();
-    let width = $(document).width();
-    $(".noOneD").height(height);
-    $(".noOneD").width(width);
+    
 });
 
 $(".noOneD button").on("click", () => {

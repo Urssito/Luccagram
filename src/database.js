@@ -1,7 +1,13 @@
 const mongo = require("mongoose");
+const fs = require("fs");
+const path = require("path");
+const dir = path.join(__dirname, 'mongoData.json')
 
-uri = "mongodb+srv://urssito:Ciredin231+@cluster0.vosld.mongodb.net/lg-db-app?retryWrites=true&w=majority";
+if(fs.existsSync(dir)){
+    let uri = fs.readFileSync(dir);
+    uri = JSON.parse(uri);
 
-mongo.connect(uri)
-  .then(db => console.log("DB connected in: ", uri))
-  .catch(err => {console.error(err)})
+    mongo.connect(uri.uri[0])
+      .then(db => console.log("DB connected in: ", uri.uri[0]))
+      .catch(err => {console.log(err)})
+}

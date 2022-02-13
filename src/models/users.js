@@ -13,6 +13,7 @@ const usuario = new Schema({
     email: {type:String, required: true},
     date: {type: Date, default: Date.now},
     description: {type: String, required: true, default: "hola!"},
+    followers: [{type: String, required: false}],
     Google: {
         drivePath: {type: String, required: false},
         profilePicId: {type: String, required: false, default: ''}
@@ -20,8 +21,7 @@ const usuario = new Schema({
     profilePhoto: {
         filename: {type: String, required: true, default: 'profilePhoto.jpg'},
         path: {type: String, required: true, default: path.join(__dirname, '..', 'public', 'img', 'main')},
-        ext: {type: String, required: true, default:'jpg'},
-        parents: {type: Array, required: false}
+        ext: {type: String, required: true, default:'jpg'}
     }
 
 }, {

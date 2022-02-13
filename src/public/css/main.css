@@ -1,53 +1,20 @@
 body{
-    background: #191919;
-    height: 93.5vh;
-}
-
+    background: #fff;
+    height: 93.5vh;}
 html, body{
-    margin: 0;
-}
-
-.login-card {
-    display: flex !important;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-}
-
-.noOneD{
-    height: 0;
-    width: 0;
-    position:absolute;
-    z-index: 500;
-}
-
-.noOneD button{
-    border-style: none;
-    background-color: transparent;
-    height: 100%;
-    width: 100%;
-}
-
-.noOneD button:hover{
-    cursor: default;
-}
-
-.dropdown-menu{
-    z-index: 600;
-}
-
+    margin: 0;}
+#main{
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr;}
 .bg-dark{
-    background-color: #212121 !important;
-}
-
-.title{
-    font-family: 'Dancing Script', cursive;
-    font-size: 24px;
-    padding: 0;
-}
-
-input[type="text"]{
-    border-radius: 2px;
-    border-style: none;
-    border: 1px solid #999;
-}
+    background-color: #212121;}
+.bg-light{
+    background-color: #fff;}
+.a-normalize{
+    text-decoration: none;
+    color: #000;}
+.a-normalize:hover{
+    text-decoration: none;
+    color:#000;}
+.hide{
+    display: none;}

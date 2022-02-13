@@ -3,7 +3,6 @@ const { Schema } = mongo;
 
 const publicacion = new Schema({
 
-    title: {type: String, required: true},
     publication: {type:String, required: true},
     date: {type: Date, default: Date.now},
     userId: {type: String, required: true},

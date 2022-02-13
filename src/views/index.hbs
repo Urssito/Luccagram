@@ -1,5 +1,29 @@
 {{#if user}}
-    {{> publication }}
+    <div id="op-canvas">
+        <div class="dropInactive getId menu-div" id="menu{{@index}}">
+            <div class="menu">
+                {{#when userId "eq" ../user._id}}
+                <a href="/edit/{{_id}}" class="menu-element"><span class="menu-icon-div"><i class="fas fa-edit"></i></span>Editar</a>
+                <form action="/delete/{{_id}}?_method=DELETE" method="POST">
+                <button type="submit" name="delete-btn" class="menu-element"><span class="menu-icon-div"><i class="fas fa-trash-alt"></i></span>Eliminar</button>
+                </form>
+                {{/when}}
+                <a class="menu-element" href="#"><span class="menu-icon-div"><i class="fas fa-user-alt"></i></span>Perfil</a>
+                <a href="http://" target="_blank" rel="noopener noreferrer">aaaaaa</a>
+                <a class="menu-element" href="#"><span class="menu-icon-div"><i class="fas fa-info"></i></span>Info</a>
+            </div>
+        </div>
+    </div>
+    <div id="asideL">
+        LADO IZQUIERDO
+    </div>
+    <div id="center">
+        {{> newPublications }}
+        {{> publication }}
+    </div>
+    <div id="asideR">
+        LADO DERECHO
+    </div>
 {{else}}
 <div class="m-0 row justify-content-center login-card">
     <div class="col-md-4 mx-auto">

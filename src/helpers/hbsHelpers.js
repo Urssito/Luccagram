@@ -29,13 +29,25 @@ const lenghtobj = Handlebars.registerHelper('get_length', function (obj) {
 
 const profilePic = Handlebars.registerHelper('profilePic', function (picture) {
     if(picture){
-        return `https://drive.google.com/uc?export=view&id=${picture}`
+        return `https://drive.google.com/uc?export=view&id=${picture}`;
     }else{
         return "/img/main/profilePhoto.jpg";
     }
-})
+});
+
+const likeCheck = Handlebars.registerHelper('likeCheck', function(likes, actualUser){
+    let check = '';
+    likes.forEach(user => {
+        if(user == actualUser){
+            check = 'checked';
+        }
+    });
+
+    return check;
+});
 
 module.exports = lenghtobj;
 module.exports = forbucle;
 module.exports = compareHelper;
 module.exports = profilePic;
+module.exports = likeCheck;

@@ -1,42 +1,52 @@
-{{#if user}}
 <div class="col-xs-12">
     {{#each publications}}
-        <div class="row-md-1 m-3 center-block">
-            <div class="card">
-                <div class="card-body">
-                    <h4 class="card-title d-flex justify-content-between align-items-center header">
-                        <div>
-                            <img class="profilePhoto" src='{{profilePic profilePic}}' alt="{{user.user}}">
-                            <strong>{{user}}</strong>
-                        </div>
-                        <div class="op-btn-div getId" id="btn{{@index}}">
-                                <button class="op-btn getId" id="btn{{@index}}">
-                                <circle class="getId" id="btn{{@index}}"></circle>
-                                <circle class="getId" id="btn{{@index}}"></circle>
-                                <circle class="getId" id="btn{{@index}}"></circle>
-                            </button>
-                        </div>
-                        <div class="dropInactive getId menu-div" id="menu{{@index}}">
-                            <div class="menu">
-                                {{#when userId "eq" user.userIds }}
-                                <a href="/edit/{{_id}}" class="menu-element"><span class="menu-icon-div"><i class="fas fa-edit"></i></span>Editar</a>
-                                <form action="/delete/{{_id}}?_method=DELETE" method="POST">
-                                <button type="submit" name="delete-btn" class="menu-element"><span class="menu-icon-div"><i class="fas fa-trash-alt"></i></span>Eliminar</button>
-                                </form>
-                                {{/when}}
-                                <a class="menu-element" href="#"><span class="menu-icon-div"><i class="fas fa-user-alt"></i></span>Perfil</a>
-                                <a class="menu-element" href="#"><span class="menu-icon-div"><i class="fas fa-info"></i></span>Info</a>
-                            </div>
-                        </div>
-                        <h3>{{title}}</h3>
-                    </h4>
-                    <p class="d-flex justify-content-between align-items-center">
+        <div class="center-block">
+            <div class="card-publication">
+                <h5 class="publication-header">
+                    <div>
+                        <a href="/user/{{user}}" class="user">
+                            <img class="profilePhoto" src='{{profilePic ../user.Google.profilePicId}}' alt="{{user.user}}">
+                            <b>{{user}}</b>
+                        </a>
+                    </div>
+                    <div class="op-btn-div getId" id="btn{{@index}}">
+                            <button class="op-btn getId" id="btn{{@index}}">
+                            <circle class="getId" id="btn{{@index}}"></circle>
+                            <circle class="getId" id="btn{{@index}}"></circle>
+                            <circle class="getId" id="btn{{@index}}"></circle>
+                        </button>
+                    </div>
+                </h4>
+                <div class="div-content">
+                    <p class="publication-body d-flex justify-content-between align-items-center">
                         {{ publication }}
                     </p>
+                </div>
+                <div id="interactions">
+                    <div class="interactions" id="div-like">
+                        <input class="likeBtn" onload="a()" onclick="likeCheckPost('{{../user.user}}', '{{@index}}','{{_id}}')" type="checkbox" name="like" id="likeBtn{{@index}}" {{likeCheck likes ../user.user}}>
+                        <label class="labelLikeBtn" for="likeBtn{{@index}}">
+                            <i class="material-icons heart-icon" id="heart-icon{{@index}}">
+                                favorite_border
+                            </i>
+                            <span class="interaction-text" id="likeText{{@index}}">
+                                {{likes.length}}
+                            </span>
+                        </label>
+                    </div>
+                    <div class="interactions" id="div-comments">
+                        <button class="commentBtn" id="comment{{@index}}">
+                            <span class="material-icons comment-icon" id="comment-icon{{@index}}">
+                                comment
+                            </span>
+                            <span class="interaction-text">
+                                0
+                            </span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     {{/each}}
 </div>
-
-{{/if}}
+<script src="/javascript/like.js"></script>

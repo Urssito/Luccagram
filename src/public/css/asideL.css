@@ -1,0 +1,10 @@
+#asideL{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: #888 1px solid;
+}

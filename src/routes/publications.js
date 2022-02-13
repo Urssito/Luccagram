@@ -12,26 +12,23 @@ router.get("/upload", isAuthenticated, (req,res) => {
 
 router.post("/upload", isAuthenticated, async(req, res) => {
 
-    let { title, publication } = req.body;
+    let {publication} = req.body;
     let errors = [];
-    if(!title){
-        errors.push({text: "inserte un titulo."})
-    }
     if(!publication){
         errors.push({text: "la publicacion no puede estar vacia."})
     }
     if(errors.length > 0)
     {
-        res.render("publications/newPublications", {errors, title, publication})
+        res.render("publications/newPublications", {errors, publication})
     }else{
         
-        const newPublication = new objPublication({title, publication});
+        const newPublication = new objPublication({publication});
         newPublication.userId = req.user.id;
         newPublication.user = req.user.user;
         if(req.user.Google.profilePicId) newPublication.profilePic = req.user.Google.profilePicId;
         await newPublication.save();
-        req.flash("successMsg", "Nota agregada exitosamente!");
-        res.redirect("/profile");
+        console.log(newPublication);
+        res.redirect(`/`);
 
     }
     
@@ -46,18 +43,18 @@ router.get("/edit/:id", isAuthenticated, async(req, res) => {
 
 router.put("/editSuccess/:id", isAuthenticated, async(req, res) => {
 
-    const { title, publication } = req.body;
+    const {publication } = req.body;
     console.log(req.body);
     console.log(req.headers);
-    await objPublication.findByIdAndUpdate(req.params.id, {title, publication});
-    res.redirect("/profile");
+    await objPublication.findByIdAndUpdate(req.params.id, {publication});
+    res.redirect("/");
 
 });
 
 router.delete("/delete/:id", isAuthenticated, async(req,res) => {
 
     await objPublication.findByIdAndDelete(req.params.id);
-    res.redirect("/profile")
+    res.redirect(`/`)
 
 });
 
