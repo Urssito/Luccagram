@@ -1,52 +1,38 @@
-const express = require("express"),
-      hbs = require("express-handlebars"),
-      override = require("method-override"),
-      session = require("cookie-session"),
-      flash = require("connect-flash"),
-      path = require("path"),
-      passport = require("passport"),
-      { google } = require("googleapis"),
-      request = require("request"),
-      urlParse = require("url-parse"),
-      queryParse = require("query-string"),
-      bodyParser = require("body-parser"),
-      fs = require('fs');
+const express = require("express");
+const override = require("method-override");
+const session = require("cookie-session");
+const flash = require("connect-flash");
+const path = require("path");
+const passport = require("passport");
+const { google } = require("googleapis");
+const request = require("request");
+const urlParse = require("url-parse");
+const queryParse = require("query-string");
+const bodyParser = require("body-parser");
+const fs = require('fs');
 
 // Initializations
 const app = express();
 const cookieParser = require("cookie-parser");
-const drive = require("./config/googleAPI");
-require("./helpers/hbsHelpers");
 require("./config/diskStorage");
 require("./config/passport");
 require("./database");
 require("./helpers/updateSchemas.js");
 
 // settings
+app.set('trust proxy', 1)
 app.set("port", process.env.PORT || 8080);
-app.set("views", path.join(__dirname, "views"));
-app.engine(".hbs", hbs({
-    defaultLayout: "main",
-    layoutsDir: path.join(app.get("views"), "layouts"),
-    partialsDir: path.join(app.get("views"), "partials"),
-    extname: ".hbs",
-
-    helpers: {
-        calculation: "s"
-    }
-}));
-
-app.set("view engine", "hbs");
 
 // Middlewares
+app.use(bodyParser.urlencoded({extended:false}));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended:true}));
 app.use(cookieParser('TF&^Q4U:r{gGM&hB?V,~V:*7-yB*T:'));
 app.use(override("_method"));
 app.use(session({
     secret: "TF&^Q4U:r{gGM&hB?V,~V:*7-yB*T:",
-    resave: true,
-    saveUninitialized: true
+    resave: false,
+    saveUninitialized: false,
+    sameSite: 'secure'
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -72,7 +58,7 @@ app.use(require("./routes/publications"));
 app.use(require("./routes/users"));
 
 // Static Files
-app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(path.join(__dirname,'..', "dist")));
 app.use(express.static(path.join(__dirname,'..','node_modules')));
 
 // Google Authorize
@@ -142,6 +128,13 @@ app.get('/oauth2callback', async (req, res) => {
     }
 
 });
+
+app.get("/home", (req, res) => {
+    res.json({
+        name: "Lucca",
+        age: 19
+    })
+})
 
 // server is listening
 app.listen(app.get("port"), () => {

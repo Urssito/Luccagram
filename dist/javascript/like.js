@@ -5,7 +5,7 @@ function likeCheckPost(user, i, pubID){
 
     $.ajax({
         type: 'post',
-        url: '/',
+        url: '/api/Home',
         contentType: 'application/json',
         data: JSON.stringify({user: user,pubID: pubID, value: like}),
         success: function(result){

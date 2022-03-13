@@ -133,14 +133,14 @@ circle{
     border-top: #888 1px solid;
 }
 
-.likeBtn{
-    display: none;
+.div-like{
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.labelLikeBtn{
-    display: flex;
-    justify-content: center;
-    text-align: center;
+.likeBtn{
+    display: none;
 }
 
 .heart-icon:hover{
@@ -165,7 +165,7 @@ circle{
 }
 
 .interaction-text{
-    padding: 0 12px;
+    padding: 0 3px;
 }
 
 label > .interaction-text{

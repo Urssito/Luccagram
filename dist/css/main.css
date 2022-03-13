@@ -3,9 +3,12 @@ body{
     height: 93.5vh;}
 html, body{
     margin: 0;}
-#main{
+#react-root{
+    height: 100%;}
+#app-body{
     display: grid;
-    grid-template-columns: 1fr 1.5fr 1fr;}
+    grid-template-columns: 1fr 1.5fr 1fr;
+    height: 100%;}
 .bg-dark{
     background-color: #212121;}
 .bg-light{
@@ -18,3 +21,8 @@ html, body{
     color:#000;}
 .hide{
     display: none;}
+.disable-select {
+    -webkit-touch-callout: none;-webkit-user-select: none;
+    -khtml-user-select: none;-moz-user-select: none;
+    -ms-user-select: none;user-select: none;
+}

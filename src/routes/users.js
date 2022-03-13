@@ -45,7 +45,7 @@ router.post("/signup", async (req, res) => {
         res.render("users/signup", {errors, user, email, password, confirmPassword});
     }else{
         const errors = [];
-        var err = false;
+        let err = false;
         const emailUser = await objUser.findOne({email:email});
         const userUser = await objUser.findOne({user:user});
         if(emailUser || userUser){
@@ -175,10 +175,12 @@ router.put("/profile/editsuccess", upload.single("image"), async (req,res) => {
             }*/
          
             const profilePicId = file.data.id;
+            await publications.findOneAndUpdate({userId: req.user.id}, {profilePic: profilePicId});
             const Google = {
                 profilePicId: profilePicId,
                 drivePath: req.user.Google.drivePath
             }
+
             objUser.findByIdAndUpdate(req.user.id, {Google}, (err, result) => {
                 if (err) console.log("hubo un error al actualizar el objeto usuario: \n",err);
                 else console.log('el archivo se subió de forma exitosa');
@@ -212,7 +214,7 @@ router.put("/profile/editsuccess", upload.single("image"), async (req,res) => {
     }
 });
 
-router.get("/user/*", isAuthenticated, async(req, res) => {
+router.get("/user/*", async(req, res) => {
 
     const urlParse = req.url.split("/").pop();
     const user = await objUser.findOne({user: urlParse}).lean();
@@ -220,7 +222,7 @@ router.get("/user/*", isAuthenticated, async(req, res) => {
 
     if(user){
         const publications = await objPublication.find({ user: urlParse}).lean().sort({date: "desc"});
-        res.render("publications/allPublications", { publications, user, currentUser });
+        res.json({ publications, user, currentUser });
     }else res.send("Usuario no encontrado.")
 });
 

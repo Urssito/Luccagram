@@ -4,13 +4,22 @@ const router = express.Router();
 const objPublication = require("../models/publications")
 const { isAuthenticated } = require("../helpers/auth");
 
-router.get("/upload", isAuthenticated, (req,res) => {
+router.get('/api/getPubs', (req, res) => {
+    let pubs = [];
+    objPublication.find((err, results) => {
+        if(err) console.error;
+
+        res.json(results);
+    }).limit(20);
+});
+
+router.get("/api/upload", isAuthenticated, (req,res) => {
 
     res.render("publications/newPublications")
 
 });
 
-router.post("/upload", isAuthenticated, async(req, res) => {
+router.post("/api/upload", isAuthenticated, async(req, res) => {
 
     let {publication} = req.body;
     let errors = [];
@@ -34,14 +43,14 @@ router.post("/upload", isAuthenticated, async(req, res) => {
     
 });
 
-router.get("/edit/:id", isAuthenticated, async(req, res) => {
+router.get("/api/edit/:id", isAuthenticated, async(req, res) => {
 
     const editNote = await objPublication.findById(req.params.id).lean();
     res.render("publications/editPublications", { editNote });
 
 });
 
-router.put("/editSuccess/:id", isAuthenticated, async(req, res) => {
+router.put("/api/editSuccess/:id", isAuthenticated, async(req, res) => {
 
     const {publication } = req.body;
     console.log(req.body);
@@ -51,7 +60,7 @@ router.put("/editSuccess/:id", isAuthenticated, async(req, res) => {
 
 });
 
-router.delete("/delete/:id", isAuthenticated, async(req,res) => {
+router.delete("/api/delete/:id", isAuthenticated, async(req,res) => {
 
     await objPublication.findByIdAndDelete(req.params.id);
     res.redirect(`/`)

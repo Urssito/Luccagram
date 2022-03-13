@@ -1,5 +1,3 @@
-const { Console } = require("console");
-const { Socket } = require("dgram");
 const express = require("express");
 const router = express.Router();
 const fs = require("fs");
@@ -7,10 +5,18 @@ const path = require("path");
 
 const M_publicacion = require("../models/publications");
 const M_users = require("../models/users");
+const passport = require('passport');
+const { default: cluster } = require("cluster");
 
-router.get("/", async(req, res) => {
+router.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "..", "..", "dist", "index.html")), function(err) {
+        if (err) res.status(500).send(err);
+    }
+})
 
-    console.log(M_users.schema.obj)
+router.get("/api/home", async(req, res) => {
+
+    console.log(passport.authenticate('session'));
     const mongodata = path.join(__dirname,'..','mongoData.json')
 
     if(!fs.existsSync(mongodata)){
@@ -36,21 +42,16 @@ router.get("/", async(req, res) => {
     require("../database")
     if(req.user){
     const publications = await M_publicacion.find().lean().sort({date: "desc"});
-    let userIds = null;
-    let objuser = null
+    let user = null
     
-    userIds = JSON.parse(JSON.stringify(req.user));
-    userIds = userIds._id;
-    objuser = req.user;
-    res.render("index", { publications, userIds, objuser });
+    user = JSON.parse(JSON.stringify(req.user));
+    return res.json({ publications, objuser });
     }else{
-        res.render("index");
+        return res.json({});
     }
-    
-
 });
 
-router.post('/', async (req,res) => {
+router.post('/api/home', async (req,res) => {
 
     // Search Querie
     if(req.body.query){
@@ -78,7 +79,7 @@ router.post('/', async (req,res) => {
                 result = hint;
             }
 
-            res.send({response: result});
+            res.json({response: result});
 
         });
     }
@@ -89,18 +90,26 @@ router.post('/', async (req,res) => {
         if(!publication.likes){
             publication.likes = [];
         }
-        if(req.body.value == true){
-            publication.likes.push(req.body.user);
+        const likes = publication.likes;
+        if(!likes.includes(req.body.user)){
+            likes.push(req.body.user);
         }else{
-            for(let i = 0;i<publication.likes.length;i++){
-                if(publication.likes[i] == req.body.user){
-                    publication.likes.splice(i,1);
+            for(let i = 0;i<likes.length;i++){
+                if(likes[i] == req.body.user){
+                    likes.splice(i,1);
                 }
             }
         }
+        publication.likes = likes
         await M_publicacion.findOneAndUpdate({_id:req.body.pubID},publication);
-        res.send({totalLikes: publication.likes.length})
+        res.json({totalLikes: likes})
+    }else{
+        res.json({nombre: 'lucca'})
     }
+});
+
+router.get("/api/authenticate", (req, res) => {
+    res.json({user: 'urssito'})
 });
 
 router.get("/chat", (req, res) =>{
@@ -108,5 +117,4 @@ router.get("/chat", (req, res) =>{
     res.render("chat");
 
 });
-
 module.exports = router;

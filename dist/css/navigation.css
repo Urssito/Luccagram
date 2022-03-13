@@ -35,7 +35,7 @@ nav{
 }
 
 input[type="text"]{
-    border-radius: 2px;
+    border-radius: 5px;
     border-style: none;
     border: 1px solid #999;
 }
