@@ -21,7 +21,8 @@ require("./helpers/updateSchemas.js");
 
 // settings
 app.set('trust proxy', 1)
-app.set("port", process.env.PORT || 8080);
+app.set("port", process.env.PORT || 8081);
+app.set("reactPort", process.env.PORT || 8080)
 
 // Middlewares
 app.use(bodyParser.urlencoded({extended:false}));
@@ -139,4 +140,5 @@ app.get("/home", (req, res) => {
 // server is listening
 app.listen(app.get("port"), () => {
     console.log("server on port", app.get("port"));
+    console.log("React on port", app.get("reactPort"));
 });
