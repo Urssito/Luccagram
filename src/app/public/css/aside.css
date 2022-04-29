@@ -1,0 +1,32 @@
+#aside{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    width: 40%;
+}
+
+#search-div{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0 0 0;
+    padding: 9px;
+    border-radius: 999px;
+    background-color: #ddd;
+}
+
+#search-input{
+    border-style: none;
+    background-color: transparent;
+    outline: none;
+}
+
+#chats{
+    display: flex;
+    width: 100%;
+    height: 50%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

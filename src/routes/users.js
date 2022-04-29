@@ -1,62 +1,57 @@
 const express = require("express");
-const passport = require("passport");
 const router = express.Router();
 const path = require("path");
 const fs = require("fs");
 const sharp = require("sharp");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs")
+const { isAuthenticated } = require("../helpers/auth");
 
-const objUser = require("../models/users");
-const objPublication = require("../models/publications")
+const userModel = require("../models/users");
+const pubModel = require("../models/publications")
 const multer = require("multer");
 const storage = require("../config/diskStorage");
 const upload = multer({storage: storage});
-const { isAuthenticated } = require("../helpers/auth");
 
-router.get("/signup", (req,res) => {
-
-    res.render("users/signup");
-
-});
-
-router.post("/signup", async (req, res) => {
+router.post("/api/signup", async (req, res) => {
 
     const { user, password, confirmPassword, email } = req.body;
     const drive = require("../config/googleAPI");
     const errors = []
     if(password && confirmPassword && password != confirmPassword){
-        errors.push({text: "las contraseñas no coinciden"});
+        errors.push("las contraseñas no coinciden");
     }
     if(password && password.length < 4){
-        errors.push({text: "la contraseña debe tener mas de 4 caracteres"});
+        errors.push("la contraseña debe tener mas de 4 caracteres");
     }
     if(!user){
-        errors.push({text: "debe ingresar un usuario"});
+        errors.push("debe ingresar un usuario");
     }
     if(!password){
-        errors.push({text: "debe ingresar una contraseña"});
+        errors.push("debe ingresar una contraseña");
     }
     if(password && !confirmPassword){
-        errors.push({text: "debe confirmar su contraseña"});
+        errors.push("debe confirmar su contraseña");
     }
     if(!email){
-        errors.push({text: "debe ingresar un correo"});
+        errors.push("debe ingresar un correo");
     }
     if(errors.length > 0){
-        res.render("users/signup", {errors, user, email, password, confirmPassword});
+        res.status(401).json({errors});
     }else{
         const errors = [];
         let err = false;
-        const emailUser = await objUser.findOne({email:email});
-        const userUser = await objUser.findOne({user:user});
+        const emailUser = await userModel.findOne({email:email});
+        const userUser = await userModel.findOne({user:user});
         if(emailUser || userUser){
-            if(emailUser) errors.push({text: "el email ya está en uso"});
-            if(userUser) errors.push({text: "el nombre de usuario ya esta en uso"});
-            res.render("users/signup", {errors, user, email, password, confirmPassword})
+            if(emailUser) errors.push("el email ya está en uso");
+            if(userUser) errors.push("el nombre de usuario ya esta en uso");
+            res.status(401).json({errors})
             err = true;
         }
         if(!err){
             const errors = []
-            const newUser = await new objUser({user, password, email}).save();
+            const newUser = await new userModel({user, password, email}).save();
             newUser.password = await newUser.encryptPassword(password);
             newUser.save();
             const userId = newUser.id;
@@ -65,15 +60,15 @@ router.post("/signup", async (req, res) => {
                 'mimeType': 'application/vnd.google-apps.folder',
                 'parents': ['1-PRGl6OPxvGb0X5mkeNd8sULHrILm2vo']
             }
-            const folder =  await drive.files.create({
+            await drive.files.create({
                 resource: fileMetadata,
                 fields: 'id'
             }, async function (err, file) {
                 if(err) {
                     console.error(err);
-                    objUser.remove({user:user});
-                    errors.push({text: "Ocurrió un error al crear su cuenta, intentelo de nuevo."});
-                    res.render("users/signup", {errors, user, email, password, confirmPassword})
+                 userModel.remove({user:user});
+                    errors.push("Ocurrió un error al crear su cuenta, intentelo de nuevo.");
+                    res.status(401).json({errors})
 
                 }else{
                     console.log('Folder Id: ', file.data.id);
@@ -81,30 +76,57 @@ router.post("/signup", async (req, res) => {
                     await newUser.save();
                 }
             })
-            req.flash("successMsg", "cuenta creada exitosamente!");
-            res.redirect("/")
+            let resUser = await JSON.parse(JSON.stringify(newUser));
+            delete resUser['password'];
+            delete resUser['Google'];
+            const token = jwt.sign({
+                user: resUser
+            },'banana123',{expiresIn:'24h'})
+
+            res.status(201).json({
+                msg: 'usuario creado correctamente!',
+                user: resUser,
+                token
+            });
         }
     }
 
 });
 
-/*router.get("/login", (req, res) => {
+router.post('/api/login', async (req, res) => {
+    const {user, password} = req.body;
+    const errors = [];
 
-    res.render("users/login");
+    const userdb = await userModel.findOne({user: user});
+    let resUser = null;
+    let match = null;
 
-});*/
+    if(userdb){
 
-router.post("/login", passport.authenticate("local", {
-    successRedirect: "/",
-    failureRedirect: "/",
-    failureFlash: true
-}));
-
-router.get("/logout", (req,res) => {
-
-    req.logOut();
-    res.redirect("/");
+        resUser = await JSON.parse(JSON.stringify(userdb));
+        resUser.profilePicId = resUser.Google.profilePicId;
+        delete resUser['password'];
+        delete resUser['Google']
+        match = await bcrypt.compare(password, userdb.password);
     
+    }else{
+        errors.push('usuario o correo inexistente');
+    }
+    if(userdb && !match){
+        errors.push('contraseña incorrecta');
+    }
+    
+    if(errors.length > 0){
+        res.json({errors})
+    }
+    else{
+        const token = jwt.sign({
+            user: resUser
+        },'banana123',{expiresIn:'24h'})
+
+        res.json({status: 'ok', user: resUser, token})
+    }
+
 });
 
 router.get("/profile/edit", (req, res) => {
@@ -117,9 +139,9 @@ router.put("/profile/editsuccess", upload.single("image"), async (req,res) => {
 
     const { user, description, imgDim} = req.body;
     const drive = require("../config/googleAPI")
-    const objUser = require("../models/users");
+    const userModel = require("../models/users");
     const publications = require("../models/publications");
-    const actualUser = await objUser.findOne({id: req.user.id});
+    const actualUser = await userModel.findOne({id: req.user.id});
     upload.single("image");
     let error = false;
 
@@ -181,7 +203,7 @@ router.put("/profile/editsuccess", upload.single("image"), async (req,res) => {
                 drivePath: req.user.Google.drivePath
             }
 
-            objUser.findByIdAndUpdate(req.user.id, {Google}, (err, result) => {
+         userModel.findByIdAndUpdate(req.user.id, {Google}, (err, result) => {
                 if (err) console.log("hubo un error al actualizar el objeto usuario: \n",err);
                 else console.log('el archivo se subió de forma exitosa');
             })
@@ -205,7 +227,7 @@ router.put("/profile/editsuccess", upload.single("image"), async (req,res) => {
         actualUser.user = user;
     }
 
-    await objUser.findByIdAndUpdate(req.user.id, {user, description});
+    await userModel.findByIdAndUpdate(req.user.id, {user, description});
     await publications.findOneAndUpdate({userId: req.user.id}, {user: user});
     
     if(!error){
@@ -214,16 +236,21 @@ router.put("/profile/editsuccess", upload.single("image"), async (req,res) => {
     }
 });
 
-router.get("/user/*", async(req, res) => {
+router.get("/api/users", async(req, res) => {
 
-    const urlParse = req.url.split("/").pop();
-    const user = await objUser.findOne({user: urlParse}).lean();
-    const currentUser = await objUser.findOne(req.user).lean();
+    const getUser = 'http://localhost:3000/user/urssito' //req.get('get-user');
+    //console.log(getUser)
+
+    const urlParse = getUser.split("/").pop();
+    const userdb = await userModel.findOne({user: urlParse}).lean();
+    const user = await JSON.parse(JSON.stringify(userdb));
 
     if(user){
-        const publications = await objPublication.find({ user: urlParse}).lean().sort({date: "desc"});
-        res.json({ publications, user, currentUser });
-    }else res.send("Usuario no encontrado.")
+        delete user.password;
+        delete user.Google;
+        const pubs = await pubModel.find({ user: urlParse}).lean().sort({date: "desc"});
+        res.json({ pubs, user });
+    }else res.json({error: "Usuario no encontrado."})
 });
 
 module.exports = (router);

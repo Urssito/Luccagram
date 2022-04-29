@@ -2,21 +2,14 @@ const express = require("express");
 const router = express.Router();
 const fs = require("fs");
 const path = require("path");
+const { isAuthenticated } = require("../helpers/auth");
 
 const M_publicacion = require("../models/publications");
 const M_users = require("../models/users");
 const passport = require('passport');
 const { default: cluster } = require("cluster");
 
-router.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "..", "..", "dist", "index.html")), function(err) {
-        if (err) res.status(500).send(err);
-    }
-})
-
 router.get("/api/home", async(req, res) => {
-
-    console.log(passport.authenticate('session'));
     const mongodata = path.join(__dirname,'..','mongoData.json')
 
     if(!fs.existsSync(mongodata)){
@@ -53,7 +46,7 @@ router.get("/api/home", async(req, res) => {
 
 router.post('/api/home', async (req,res) => {
 
-    // Search Querie
+    // Search Querie|
     if(req.body.query){
         searchQ = req.body.query.toLowerCase();
     }
@@ -103,13 +96,14 @@ router.post('/api/home', async (req,res) => {
         publication.likes = likes
         await M_publicacion.findOneAndUpdate({_id:req.body.pubID},publication);
         res.json({totalLikes: likes})
+        console.log(likes)
     }else{
         res.json({nombre: 'lucca'})
     }
 });
 
-router.get("/api/authenticate", (req, res) => {
-    res.json({user: 'urssito'})
+router.get("/api/authenticate", isAuthenticated, (req, res) => {
+    console.log('gola')
 });
 
 router.get("/chat", (req, res) =>{

@@ -3,10 +3,10 @@ const html = require('html-webpack-plugin');
 const devServer = require("webpack-dev-server");
 
 const webpack = {
-    mode: 'development',
-    entry: './src/app/index.js',
+    mode: 'production',
+    entry: './src/index.js',
     output: {
-        path: path.join(__dirname, 'dist'),
+        path: path.join(__dirname, 'public'),
         filename: 'bundle.app.js',
         publicPath: '/'
     },
@@ -17,7 +17,7 @@ const webpack = {
         rules: [
             {
                 test: /\.jsx?$/,
-                include: [path.resolve(__dirname,'src','app')],
+                include: [path.resolve(__dirname,'src')],
                 exclude: [path.resolve(__dirname,'node_modules')],
                 use:{
                     loader: 'babel-loader',
@@ -33,7 +33,7 @@ const webpack = {
     },
     plugins: [
         new html({
-            template: './src/app/index.html'
+            template: './src/index.html'
         })
     ]
 }

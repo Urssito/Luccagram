@@ -17,11 +17,6 @@ const usuario = new Schema({
     Google: {
         drivePath: {type: String, required: false},
         profilePicId: {type: String, required: false, default: ''}
-    },
-    profilePhoto: {
-        filename: {type: String, required: true, default: 'profilePhoto.jpg'},
-        path: {type: String, required: true, default: path.join(__dirname, '..', 'public', 'img', 'main')},
-        ext: {type: String, required: true, default:'jpg'}
     }
 
 }, {
@@ -34,8 +29,8 @@ usuario.methods.encryptPassword = async(password) => {
     return hash
 };
 
-usuario.methods.matchPassword = async function (password) {
-    const pass = await bcrypt.compare(password, this.password);
+usuario.methods.matchPassword = function (password) {
+    const pass = bcrypt.compare(password, this.password);
     return pass
 };
 

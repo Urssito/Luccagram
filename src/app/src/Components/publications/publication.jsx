@@ -1,27 +1,19 @@
 import React, { Component, useEffect, useState } from 'react'
 import "regenerator-runtime/runtime";
+import { useUser } from '../../Providers/user';
 
-export class Publication extends Component{
-    
-    async likeCheckPost(pubID){
-        const res = await fetch('api/home', {
-            method: 'POST',
-            data: {user: this.props.user,pubID}
-        });
-        const data = await res.json();
-        console.log(data);
-    }
+function Publication ({pubs}){
+    const {userState} = useUser();
 
-    render() {
         return (
             <div id="div-publication">
                 {
-                    this.props.publications.map((pub, i) => (
+                    pubs.map((pub, i) => (
                         <div className="card-publication" key={pub._id}>
                             <h5 className="publication-header">
                                 <div>
                                     <a href={'/user/' + pub.user} className="user">
-                                        <img className="profilePhoto" src="/img/main/profilePhoto.jpg" alt={pub.user} />
+                                        <img className="profilePhoto" src={pub.profilePic ? 'http://drive.google.com/uc?export=view&id='+pub.profilePic : '/img/main/profilePhoto.jpg'} alt={pub.user} />
                                         <b>{pub.user}</b>
                                     </a>
                                 </div>
@@ -34,7 +26,7 @@ export class Publication extends Component{
                             <div id="interactions">
                                 <Like
                                 i={i}
-                                user={this.props.user.user}
+                                user={userState.user}
                                 pubID={pub._id} 
                                 likesArray={pub.likes} />
                             </div>
@@ -43,13 +35,11 @@ export class Publication extends Component{
                 }
             </div>
         )
-  }
 }
 
 function Like({i, user, pubID, likesArray}) {
     const [liked, setLiked] = useState(false);
-    const [likes, setLikes] = useState([]);
-    let likeMount = false;
+    const [likes, setLikes] = useState([...likesArray]);
 
     const likeCheckPost = async () => {
         const res = await fetch('api/home', {
@@ -63,26 +53,17 @@ function Like({i, user, pubID, likesArray}) {
         const data = await res.json();
         setLikes(data.totalLikes);
     }
-
-    const heartIcon = () => {
-        if(likes.includes(user)){
-            return 'favorite_border'
-        }else{
-            return 'favorite'
-        }
-    }
     
-    useEffect(async () => {
-        if(!likeMount && likes.length == 0){
-            setLikes(likesArray)
-            likeMount = true;
+    useEffect(() => {
+        if(likes.length === 0){
+            setLiked(false)
         }
         if(likes.includes(user)){
             setLiked(true)
         }else{
             setLiked(false)
         }
-    }, [likes, liked]);
+    }, [likes, liked, likesArray, user]);
 
     return(
         <div className="div-like">

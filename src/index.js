@@ -1,6 +1,7 @@
 const express = require("express");
 const override = require("method-override");
-const session = require("cookie-session");
+const session = require("express-session");
+const cookieParser = require("cookie-parser");
 const flash = require("connect-flash");
 const path = require("path");
 const passport = require("passport");
@@ -10,19 +11,18 @@ const urlParse = require("url-parse");
 const queryParse = require("query-string");
 const bodyParser = require("body-parser");
 const fs = require('fs');
+const cors = require('cors');
 
 // Initializations
 const app = express();
-const cookieParser = require("cookie-parser");
 require("./config/diskStorage");
-require("./config/passport");
 require("./database");
 require("./helpers/updateSchemas.js");
 
 // settings
-app.set('trust proxy', 1)
-app.set("port", process.env.PORT || 8081);
-app.set("reactPort", process.env.PORT || 8080)
+app.set('trust proxy', 1);
+app.set("port", process.env.PORT || 8080);
+const hosts = ['http://localhost:8080/', 'http://localhost:3000', 'https://luccagram.herokuapp.com'];
 
 // Middlewares
 app.use(bodyParser.urlencoded({extended:false}));
@@ -31,9 +31,23 @@ app.use(cookieParser('TF&^Q4U:r{gGM&hB?V,~V:*7-yB*T:'));
 app.use(override("_method"));
 app.use(session({
     secret: "TF&^Q4U:r{gGM&hB?V,~V:*7-yB*T:",
-    resave: false,
-    saveUninitialized: false,
-    sameSite: 'secure'
+    resave: true,
+    saveUninitialized: true
+}));
+app.use(cors({
+    origin: (origin, callback) => {
+        if(!origin) return callback(null, true);
+
+        if(hosts.indexOf(origin) !== -1){
+            return callback(null, true);
+        }else{
+            console.log(origin)
+            const msg = 'ruta de origen no autorizada.';
+            return callback(new Error(msg), false);
+        }
+
+    },
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
 }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -57,9 +71,10 @@ app.use((req,res,next) => {
 app.use(require("./routes/index"));
 app.use(require("./routes/publications"));
 app.use(require("./routes/users"));
+require("./config/passport");
 
 // Static Files
-app.use(express.static(path.join(__dirname,'..', "dist")));
+app.use(express.static(path.join(__dirname, "app")));
 app.use(express.static(path.join(__dirname,'..','node_modules')));
 
 // Google Authorize
@@ -140,5 +155,4 @@ app.get("/home", (req, res) => {
 // server is listening
 app.listen(app.get("port"), () => {
     console.log("server on port", app.get("port"));
-    console.log("React on port", app.get("reactPort"));
 });
