@@ -1,23 +1,30 @@
 import React from 'react'
-import { useUser } from '../../Providers/user'
+import { useUser } from '../../Contexts/user';
 
 function AsideL() {
-    const { userState } = useUser()
+    const {userState} = useUser();
     const height = window.innerHeight;
-    const profilePic = userState.profilePicId ? 'http://drive.google.com/uc?export=view&id='+userState.profilePicId : '/img/main/profilePhoto.jpg'
+    let profilePic = null;
+    if(userState){
+        profilePic = userState.profilePicId ? 
+        'http://drive.google.com/uc?export=view&id='+userState.profilePicId : 
+        '/img/main/profilePhoto.jpg';
+    }
 
     const logout = () => {
-        sessionStorage.removeItem('userState');
-        sessionStorage.removeItem('token');
         localStorage.removeItem('userState');
-        localStorage.removeItem('token');
-        window.location.reload()
+        document.cookie.split(';').map(c => {
+            if(c.indexOf('auth-token') !== -1){
+                document.cookie = 'auth-token=; max-age=0'
+            }
+        })
+        window.location.href = "/"
     }
 
     return (
         <div id='header' style={{height: `${height-57}px`}}>
             <div id="title">
-                Luccagram
+                <a className='a-normalize' href="/">Luccagram</a>
             </div>
             <nav>
                 <div id="nav-lspace"></div>

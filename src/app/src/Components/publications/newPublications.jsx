@@ -1,8 +1,11 @@
-import React, { useEffect } from "react";
-import { useUser } from "../../Providers/user";
+import React, { useState, useContext, useEffect } from "react";
+import { useUser } from "../../Contexts/user";
+import ErrorMsg from "../partials/error";
 
-function NewPub() {
-    const {userState, token} = useUser()
+function NewPub({getPubs}) {
+    const {userState} = useUser()
+    const [token, setToken] = useState(null);
+    const [errors, setErrors] = useState(null);
     const profilePic = userState.profilePicId ? 'http://drive.google.com/uc?export=view&id='+userState.profilePicId : '/img/main/profilePhoto.jpg'
 
     const sendPub = async () => {
@@ -22,12 +25,24 @@ function NewPub() {
         console.log(data)
 
         if(data.errors){
-            console.log(data.errors)
+            setErrors(data.errors);
+        }else{
+            getPubs();
         }
     }
 
+    useEffect(() => {
+    const cookies = document.cookie.split(';')
+    cookies.map(cookie => {
+        if(cookie.indexOf('auth-token') !== -1){
+            setToken(cookie.split('=').pop());
+        }
+    })
+    })
+
     return(
         <div id="new-pub">
+            {errors ? <ErrorMsg errors={errors} /> : ''}
             <form>
                 <div id="header-new-pub">
                     <div id="prof-pic-new-pub">
@@ -57,9 +72,9 @@ function NewPub() {
                             </button>
                         </div>
                         <div id="sbmt-new-pub">
-                            <button id="sbmtNewPub" onClick={sendPub}>
+                            <div id="sbmtNewPub" onClick={sendPub} >
                                 Subir
-                            </button>
+                            </div>
                         </div>
                     </div>
                 </div>

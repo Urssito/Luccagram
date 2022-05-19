@@ -1,30 +1,39 @@
 import React, { useEffect, useState } from 'react'
-import {useUser} from '../../Providers/user.jsx'
+import {useUser} from '../../Contexts/user.jsx'
+import Aside from '../main/aside.jsx';
+import Header from '../main/Header'
+import Loading from '../partials/loading.jsx';
 import Publication from '../publications/publication.jsx'
 
 function Profile() {
-    const { userState } = useUser();
+    const {userState} = useUser();
     const [user, setUser] = useState(null);
-    const [pubs, setPubs] = useState()
+    const [pubs, setPubs] = useState(null)
     const [loading, setLoading] = useState(true)
 
     const getUser = async () => {
+        const token = document.cookie.split(';').map(c => {
+            if(c.includes('auth-token')){
+                return c.split('=').pop()
+            }
+        })
         const res = await fetch('http://localhost:8080/api/users', {
             method: 'GET',
-            /*headers: {
+            headers: {
                 'content-type': 'application/json',
                 'get-user': window.location.href,
-            },*/
+                'auth-token': token
+            },
         });
         const data = await res.json();
-        console.log(data)
+        console.log(userState)
         if(data.error){
             console.log(data.error);
         }else{
             if(data.user){
                 setPubs(data.pubs);
                 setUser(data.user);
-                setLoading(false)
+                setLoading(false);
             }
         }
     }
@@ -36,37 +45,53 @@ function Profile() {
     if(!loading){
 
         return (
-        <div class='columns-3' id="profile-div">
-            <div className="card profile-header">
-            
-                <div className="profile-header-div">
-                    <img className="profilePic" src={user.profilePicId ? 
-                                `http://drive.google.com/uc?export=view&id=${userState.profilePicId}`:
-                                '/img/main/profilePhoto.jpg'} alt={userState.user} />
-                    <span className="username-text">
-                        <a href="/profile/edit" className="btn btn-primary edit-profile-button">Editar perfil</a>
-                    </span>
-                </div>
-                <p className="profile-description"></p>
-            </div>
-            {/*user's publications*/}
-            {pubs ?
-                <div id="pubs-table">
-                    <Publication pubs={pubs}></Publication>
-                </div>
-                :
-                <div className="col-xs-12">
-                        <div className="card mx-auto">
-                            <div className="card-body">
-                                <p className="lead">No publicaste nada :(</p>
-                                <a href="/upload" className="btn btn-success btn-block">Publica algo!</a>
+            <div id="app-body">
+                <React.StrictMode>
+                    <header>
+                        <Header />
+                    </header>
+                    <div id="content">
+                        <div id="content-pos">
+                            <div id="center">
+                                <div id="top-bar">
+                                    Perfil de {user.user}
+                                </div>
+                                <div className="profile-header">
+        
+                                    <div className="profile-header-div">
+                                        <img className="profilePic" src={user.profilePic ? 'http://drive.google.com/uc?export=view&id='+user.profilePic : '/img/main/profilePhoto.jpg'} alt={user.user} />
+                                        <div id="profile-header-data">
+                                            <div className="username-text">
+                                                {user.user}
+                                                {user.user === userState.user ? <a href="/profile/edit" className="a-normalize edit-profile-button">Editar perfil</a> : ''}
+                                            </div>
+                                            <div className="profile-description">
+                                                {user.description}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                            {/*<!-- user's publications -->*/}
+                                <div className="publications-div">
+                                    {pubs ? 
+                                        <Publication pubs={pubs} /> :
+                                        <div className="card mx-auto">
+                                            <div className="card-body">
+                                                <p className="lead">No publicaste nada :(</p>
+                                                <a href="/upload" className="btn btn-success btn-block">Publica algo!</a>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
                             </div>
+                            <Aside />
                         </div>
-                </div>}
-        </div>
+                    </div>
+                </React.StrictMode>
+            </div>
     )
     }else{
-        return <h1>cargando...</h1>
+        return <Loading />
     }
 }
 

@@ -3,14 +3,15 @@ const router = express.Router();
 const fs = require("fs");
 const path = require("path");
 const { isAuthenticated } = require("../helpers/auth");
+const bcrypt = require('bcryptjs');
 
 const M_publicacion = require("../models/publications");
-const M_users = require("../models/users");
+const objUsers = require("../models/users");
 const passport = require('passport');
 const { default: cluster } = require("cluster");
 
 router.get("/api/home", async(req, res) => {
-    const mongodata = path.join(__dirname,'..','mongoData.json')
+    const mongodata = path.join(__dirname,'..','mongoData.json');
 
     if(!fs.existsSync(mongodata)){
             
@@ -55,7 +56,7 @@ router.post('/api/home', async (req,res) => {
         let hint = ''
         let result = ''
 
-        M_users.find((err,results) => {
+        objUsers.find((err,results) => {
             if(err) console.error;
 
             let limit = 0
@@ -102,8 +103,19 @@ router.post('/api/home', async (req,res) => {
     }
 });
 
-router.get("/api/authenticate", isAuthenticated, (req, res) => {
-    console.log('gola')
+router.get("/api/authenticate", isAuthenticated, async (req, res) => {
+    const userdb = await objUsers.findById(req.user);
+    let resUser = null;
+    if(userdb){
+        resUser = await JSON.parse(JSON.stringify(userdb));
+        resUser.profilePicId = resUser.Google.profilePicId;
+        delete resUser['password'];
+        delete resUser['_id']
+        delete resUser['Google']
+
+        res.json({status: 'ok', resUser});
+    }
+    else res.json({status: 'error', error: 'usuario no encontrado'});
 });
 
 router.get("/chat", (req, res) =>{

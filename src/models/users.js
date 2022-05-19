@@ -17,7 +17,8 @@ const usuario = new Schema({
     Google: {
         drivePath: {type: String, required: false},
         profilePicId: {type: String, required: false, default: ''}
-    }
+    },
+    likes: [{type: String, required: false}]
 
 }, {
     collection: "users"

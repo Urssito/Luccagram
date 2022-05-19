@@ -1,5 +1,12 @@
 .profile-header{
     margin: 10px 0 10px 0;
+    border-bottom: 1px solid #888;
+    border-top: 1px solid #888;
+}
+
+.edit-profile-button{
+    border-radius: 5px;
+    width: 120%;
 }
 
 .profile-header-div{
@@ -12,7 +19,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    width: 90%;
+    width: 100%;
     font-size: 30px;
     height: 150px;
 }
@@ -81,6 +88,7 @@
     align-items: center;
     width: 100%;
     border-bottom: 1px solid #bbb;
+    margin: 0;
 }
 
 .edit-profile-div form{
@@ -123,16 +131,12 @@ textarea{
 
 .edit-profile-file-form{
     display: flex;
-    justify-content:space-between
+    justify-content:flex-start;
+    width: 100%;
 }
 
 #file{
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    position: absolute;
-    z-index: -1;
+    display: none;
 }
 
 #editor{
@@ -147,9 +151,10 @@ textarea{
 .preview-div{
     display: flex;
     flex-direction: column;
-    align-items: left;
+    align-items: flex-start;
     justify-content: center;
     margin: 7px;
+    width: 100%;
 }
 
 #preview{
@@ -159,22 +164,16 @@ textarea{
     visibility: hidden;
 }
 
-.edit-profile-btn-save-ProfilePhoto{
-    display: flex;
-    width: 108px;
-    height: 42px;
-    align-items: center;
-    justify-content: center;
-    justify-content: center;
-    background-color: rgb(25, 151, 25);
-    padding: 5px 8px;
-    border-radius: 3px;
-    margin: 0 4px;
-    color: #fff;
-}
-
 label[for="file"]:hover{
     cursor: pointer;
+}
+
+label{
+    margin: 0;
+}
+
+#cropper{
+    margin-bottom: 10px;
 }
 
 #image{
@@ -190,6 +189,28 @@ label[for="file"]:hover{
 #div-editor-buttons{
     display: flex;
     flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+}
+
+.editor-btn{
+    width: 23%;
+    border-radius: 3px;
+    justify-content: center;
+    align-items: center;
+    height: 35px;
+    width: 110px;
+}
+
+#cropper-search{
+    display: flex;
+    background-color: #0ba11a;
+    color: #fff;
+}
+
+#cropper-hide{
+
 }
 
 #imgDim{

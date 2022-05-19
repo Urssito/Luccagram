@@ -1,9 +1,9 @@
-import React, { Component, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import "regenerator-runtime/runtime";
-import { useUser } from '../../Providers/user';
+import { useUser } from '../../Contexts/user';
 
 function Publication ({pubs}){
-    const {userState} = useUser();
+    const {userState, token} = useUser();
 
         return (
             <div id="div-publication">
@@ -26,9 +26,10 @@ function Publication ({pubs}){
                             <div id="interactions">
                                 <Like
                                 i={i}
-                                user={userState.user}
+                                user={userState}
                                 pubID={pub._id} 
-                                likesArray={pub.likes} />
+                                likesArray={pub.likes}
+                                token={token} />
                             </div>
                         </div>
                     ))
@@ -37,31 +38,44 @@ function Publication ({pubs}){
         )
 }
 
-function Like({i, user, pubID, likesArray}) {
+function Like({i, user, pubID, likesArray, token}) {
     const [liked, setLiked] = useState(false);
-    const [likes, setLikes] = useState([...likesArray]);
+    const [likes, setLikes] = useState([...likesArray] || []);
 
     const likeCheckPost = async () => {
-        const res = await fetch('api/home', {
+        const res = await fetch('http://localhost:8080/api/like', {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: {
+                'Content-Type': 'application/json',
+                'auth-token': token
+            },
             body: JSON.stringify({
-                user,
                 pubID
             })
         });
         const data = await res.json();
         setLikes(data.totalLikes);
+        if(data.totalLikes.length > likes.length){
+            user.likes.push(pubID);
+        }else{
+            for(let i = 0;i<user.likes.length;i++){
+                if(user.likes[i] == pubID){
+                    user.likes.splice(i,1);
+                }
+            }
+        }
     }
     
     useEffect(() => {
-        if(likes.length === 0){
-            setLiked(false)
-        }
-        if(likes.includes(user)){
-            setLiked(true)
-        }else{
-            setLiked(false)
+        if(user.likes){
+            if(likes.length === 0){
+                setLiked(false)
+            }
+            if(user.likes.includes(pubID)){
+                setLiked(true)
+            }else{
+                setLiked(false)
+            }
         }
     }, [likes, liked, likesArray, user]);
 

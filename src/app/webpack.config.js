@@ -11,7 +11,8 @@ const webpack = {
         publicPath: '/'
     },
     resolve: {
-        extensions: ['.js', '.jsx']
+        extensions: ['.js', '.jsx'],
+        fallback: {'http': require.resolve('stream-http')}
     },
     module:{
         rules: [

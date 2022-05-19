@@ -12,6 +12,7 @@ const queryParse = require("query-string");
 const bodyParser = require("body-parser");
 const fs = require('fs');
 const cors = require('cors');
+const { isAuthenticated } = require("./helpers/auth");
 
 // Initializations
 const app = express();
@@ -52,20 +53,6 @@ app.use(cors({
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(flash());
-
-// Global Variables
-app.use((req,res,next) => {
-    res.locals.successMsg = req.flash("successMsg");
-    res.locals.errorMsg = req.flash("errorMsg");
-    res.locals.error = req.flash("error");
-    let user = null;
-    if(req.user){
-         user =JSON.parse(JSON.stringify(req.user));
-    }
-        
-    res.locals.user = user;
-    next();
-});
 
 // Routes
 app.use(require("./routes/index"));

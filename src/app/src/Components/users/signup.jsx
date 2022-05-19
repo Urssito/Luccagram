@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import ErrorMsg from '../partials/error';
-import { useUser } from '../../Providers/user';
+import { useUser } from '../../Contexts/user';
 
 function SignUp() {
     const {setUser, setToken} = useUser()

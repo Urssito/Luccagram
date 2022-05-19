@@ -3,7 +3,15 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
+    height: 100%;
     width: 40%;
+}
+
+#aside-pos{
+    position: fixed;
+    height: 100%;
+    width: 27.6%;
+    border-left: 1px solid #888;
 }
 
 #search-div{

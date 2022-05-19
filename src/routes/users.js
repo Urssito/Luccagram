@@ -11,6 +11,7 @@ const userModel = require("../models/users");
 const pubModel = require("../models/publications")
 const multer = require("multer");
 const storage = require("../config/diskStorage");
+const { json } = require("body-parser");
 const upload = multer({storage: storage});
 
 router.post("/api/signup", async (req, res) => {
@@ -106,6 +107,7 @@ router.post('/api/login', async (req, res) => {
         resUser = await JSON.parse(JSON.stringify(userdb));
         resUser.profilePicId = resUser.Google.profilePicId;
         delete resUser['password'];
+        delete resUser['_id']
         delete resUser['Google']
         match = await bcrypt.compare(password, userdb.password);
     
@@ -120,8 +122,9 @@ router.post('/api/login', async (req, res) => {
         res.json({errors})
     }
     else{
+
         const token = jwt.sign({
-            user: resUser
+            auth: userdb.id
         },'banana123',{expiresIn:'24h'})
 
         res.json({status: 'ok', user: resUser, token})
@@ -135,29 +138,30 @@ router.get("/profile/edit", (req, res) => {
 
 });
 
-router.put("/profile/editsuccess", upload.single("image"), async (req,res) => {
+router.put("/profile/editsuccess", isAuthenticated, upload.single("image"), async (req,res) => {
 
     const { user, description, imgDim} = req.body;
+    const errors = [];
     const drive = require("../config/googleAPI")
     const userModel = require("../models/users");
     const publications = require("../models/publications");
     const actualUser = await userModel.findOne({id: req.user.id});
-    upload.single("image");
-    let error = false;
+    let profilePicId = actualUser.Google.profilePicId;
+    let Google = actualUser.Google;
 
     // Profile Photo
 
     if(req.file) {
         console.log(req.file)
         const ext = req.file.filename.split('.').pop();
-        const originalFile = path.join(__dirname, '..', 'public', 'img', 'users', 'temp', req.file.filename);
+        const originalFile = path.join(__dirname, '..','temp', req.file.filename);
 
         //save and crop image
         if(fs.existsSync(originalFile)){
-            const rawData = imgDim.split(" ");
+            const rawData = imgDim.split(",");
             const data = rawData.map(elem => parseInt(elem,10));
-            const outputImg = `temp${req.user.id}.${ext}`
-            const imgDir = path.join(__dirname, '..', 'public', 'img', 'users', 'temp', outputImg);
+            const outputImg = `temp${actualUser.id}.${ext}`
+            const imgDir = path.join(__dirname, '..','temp', outputImg);
             await sharp(originalFile).extract({left: data[0], top: data[1], width: data[2], height: data[2]}).toFile(imgDir)
                 .then(() =>{
                     console.log("imagen cortada!");
@@ -166,10 +170,8 @@ router.put("/profile/editsuccess", upload.single("image"), async (req,res) => {
         }
 
         //Save file in Google Drive
-
-        console.log("subiendo...")
         
-        const filePath = path.join(__dirname, '..','public','img', 'users','temp', `temp${req.user.id}.${ext}`);
+        const filePath = path.join(__dirname, '..','temp', `temp${actualUser.id}.${ext}`);
     
         if(ext == 'jpg' || ext == 'jpeg' || ext == 'png'){
 
@@ -179,42 +181,38 @@ router.put("/profile/editsuccess", upload.single("image"), async (req,res) => {
                     mimeType: `image/${ext}`,
                     role: 'reader',
                     type: 'anyone',
-                    parents: [req.user.Google.drivePath]
+                    parents: [actualUser.Google.drivePath]
                 },
                 media: {
                     mimeType: `image/${ext}`,
                     body:fs.createReadStream(filePath)
-                            .on('end', () => console.log('imagen lista'))
+                            .on('end', () => console.log('imagen creada'))
                             .on('error', err => console.error(err))
                 }
             })
             .catch(console.error);
+            actualUser.Google.profilePicId = ''
 
-            /*if(req.user.Google.profilePicId != ''){
+            if(actualUser.Google.profilePicId != ''){
                 await drive.files.delete({
-                    'fileId': req.user.Google.profilePicId
+                    'fileId': actualUser.Google.profilePicId
                 })
-            }*/
-         
-            const profilePicId = file.data.id;
-            await publications.findOneAndUpdate({userId: req.user.id}, {profilePic: profilePicId});
-            const Google = {
-                profilePicId: profilePicId,
-                drivePath: req.user.Google.drivePath
             }
 
-         userModel.findByIdAndUpdate(req.user.id, {Google}, (err, result) => {
-                if (err) console.log("hubo un error al actualizar el objeto usuario: \n",err);
-                else console.log('el archivo se subió de forma exitosa');
-            })
+            // save in DB
+         
+            profilePicId = file.data.id;
+            Google = {
+                profilePicId: profilePicId,
+                drivePath: actualUser.Google.drivePath
+            }
+
             fs.unlinkSync(filePath);
             fs.unlinkSync(originalFile);
 
         }else{
-
-            error = true;
-            req.flash("errorMsg", "El formato de imagen debe ser .jpg, .jpeg o .png");
-            res.redirect("/profile/edit");
+            errors.push("El formato de imagen debe ser .jpg, .jpeg o .png");
+            fs.unlinkSync(originalFile);
         }
     }
 
@@ -223,33 +221,48 @@ router.put("/profile/editsuccess", upload.single("image"), async (req,res) => {
     actualUser.description = description;
 
     // Username
-    if(actualUser.user != user){
+    if(actualUser.user !== user){
         actualUser.user = user;
     }
 
-    await userModel.findByIdAndUpdate(req.user.id, {user, description});
-    await publications.findOneAndUpdate({userId: req.user.id}, {user: user});
+    await userModel.findByIdAndUpdate(actualUser.id, {user, description, Google});
+    await publications.updateMany({userId: actualUser.id},{user, profilePic: profilePicId});
     
-    if(!error){
-        req.flash("successMsg", "Foto de perfil guardada con éxito!")
-        res.redirect("/profile")
+    if(errors.length > 0){
+        res.json({errors})
+    }else{
+        console.log(actualUser)
+        res.json({user, description, profilePicId})
     }
 });
 
 router.get("/api/users", async(req, res) => {
 
-    const getUser = 'http://localhost:3000/user/urssito' //req.get('get-user');
-    //console.log(getUser)
+    const getUser = req.get('get-user');
+    let token = req.get('auth-token');
+    let user = null
 
-    const urlParse = getUser.split("/").pop();
-    const userdb = await userModel.findOne({user: urlParse}).lean();
-    const user = await JSON.parse(JSON.stringify(userdb));
+    let urlParse = getUser.split("/");
+    if(urlParse.length == 5){
+        urlParse = urlParse.pop();
+        const userdb = await userModel.findOne({user: urlParse}).lean();
+        user = await JSON.parse(JSON.stringify(userdb));
+    }
 
     if(user){
+
+        const id = jwt.verify(token, 'banana123').auth;
+        const userState = await JSON.parse(JSON.stringify(await userModel.findById(id)));
+        delete userState['password'];
+        delete userState['_id'];
+        delete userState['Google'];
+
+        user.profilePic = user.Google.profilePicId;;
         delete user.password;
         delete user.Google;
         const pubs = await pubModel.find({ user: urlParse}).lean().sort({date: "desc"});
-        res.json({ pubs, user });
+        req.res.locals.user = user
+        res.json({ pubs, user, userState });
     }else res.json({error: "Usuario no encontrado."})
 });
 

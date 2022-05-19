@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    
+
     const inputImage = document.getElementById("file")
     let image = document.createElement("img");
     let canvas = document.getElementById("preview");
@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function openEditor(e) {
         //create URL for the image
+        console.log('uwu')
         let urlImage = URL.createObjectURL(e.target.files[0]);
 
         //delete previous editor

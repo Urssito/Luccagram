@@ -1,13 +1,13 @@
 const multer = require("multer");
 const path = require("path");
+const jwt = require("jsonwebtoken");
 
 const storage = multer.diskStorage({
     destination: (req, file, callback) =>{        
-        callback(null, path.join(__dirname, "..", "public", "img", "users", "temp"));
+        callback(null, path.join(__dirname, "..", "temp"));
     },
     filename: (req, file, cb) => {
-        let ext = file.originalname.split(".").pop();
-        cb(null, "profile" + req.user.id + "." + ext);
+        cb(null, file.originalname);
     }
 });
 module.exports = storage;

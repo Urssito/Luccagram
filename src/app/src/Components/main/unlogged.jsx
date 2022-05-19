@@ -1,11 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
-import { useUser } from '../../Providers/user';
+import { useUser } from '../../Contexts/user';
 import ErrorMsg from '../partials/error';
 
 export function Unlogged () {
-    const {setUser, setToken} = useUser()
+    const {userState} = useUser();
     const [errors, setErrors] = useState([])
+
+    useEffect(() => {
+        if(userState && userState.errors) setErrors(userState.errors);
+    }, [userState]);
 
     async function logging(e){
         e.preventDefault()
@@ -26,15 +30,12 @@ export function Unlogged () {
             if (data.errors){
                 setErrors(data.errors)
             }else{
-                setUser(data.user);
-                setToken(data.token);
                 if(remember.checked){
-                    localStorage.setItem('userState', JSON.stringify(data.user));
-                    localStorage.setItem('token', JSON.stringify(data.token));
+                    document.cookie = "auth-token=" + data.token + ";max-age" + 60*60*24*365*100 + ";secure";
                 }else{
-                    sessionStorage.setItem('userState', JSON.stringify(data.user));
-                    sessionStorage.setItem('token', JSON.stringify(data.token));
+                    document.cookie = "auth-token=" + data.token + ";secure";
                 }
+                window.location.reload();
             }
     }
 

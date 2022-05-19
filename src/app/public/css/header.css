@@ -2,6 +2,8 @@ header{
     display: flex;
     width: 27.5%;
     position:fixed !important; 
+    height: 100%;
+    border-right: 1px solid #888;
 }
 
 #header{
