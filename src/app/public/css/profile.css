@@ -9,6 +9,32 @@
     width: 120%;
 }
 
+.follow-btn{
+    border-radius: 5px;
+    border: none;
+    width: 100%;
+    padding: 3px 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#follow{
+    background-color: rgb(31, 111, 231);
+    color: #fff;
+}
+
+#follow:hover{
+    cursor: pointer;
+    background-color: rgb(23, 77, 160);
+}
+
+#followed{
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #000;
+}
+
 .profile-header-div{
     display: flex;
     width: 100%;

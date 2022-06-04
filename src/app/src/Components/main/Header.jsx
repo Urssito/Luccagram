@@ -4,22 +4,17 @@ import { useUser } from '../../Contexts/user';
 function AsideL() {
     const {userState} = useUser();
     const height = window.innerHeight;
-    let profilePic = null;
-    if(userState){
-        profilePic = userState.profilePicId ? 
-        'http://drive.google.com/uc?export=view&id='+userState.profilePicId : 
-        '/img/main/profilePhoto.jpg';
-    }
 
     const logout = () => {
-        localStorage.removeItem('userState');
         document.cookie.split(';').map(c => {
             if(c.indexOf('auth-token') !== -1){
-                document.cookie = 'auth-token=; max-age=0'
+                document.cookie = 'auth-token=;max-age=0;path=/'
             }
-        })
-        window.location.href = "/"
+        });
+        window.location.pathname='/'
     }
+
+    function socket(){}
 
     return (
         <div id='header' style={{height: `${height-57}px`}}>
@@ -41,11 +36,11 @@ function AsideL() {
                         </span>
                         Perfil
                     </a>
-                    <a href='/saves' id="Save-btn" className='a-normalize header-btn'>
-                        <span className="material-icons">bookmark</span>
-                        Guardar
+                    <a href='' id="Save-btn" className='a-normalize header-btn'>
+                        <span className="material-icons">notifications</span>
+                        Notificaciones
                     </a>
-                    <a href='/tema' id="theme-btn" className='a-normalize header-btn'>
+                    <a onClick={socket} href='/tema' id="theme-btn" className='a-normalize header-btn'>
                     <span className="material-icons">brush</span>
                         Tema
                     </a>
@@ -54,7 +49,7 @@ function AsideL() {
             </nav>
             <div id="account">
                 <div id="account-btn">
-                <img id="account-pic" src={profilePic} alt={userState.user} />
+                <img id="account-pic" src={userState ? process.env.REACT_APP_SERVER+userState.profilePic : ''} alt={userState.user} />
                 <div id="account-user">
                     {userState.user}
                 </div>

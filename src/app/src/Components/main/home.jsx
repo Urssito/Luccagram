@@ -11,7 +11,7 @@ function Home() {
     const [loading, setLoading] = useState(true)
 
     const getPubs = async () => {
-        const res = await fetch(`http://localhost:8080/api/getPubs`);
+        const res = await fetch(process.env.REACT_APP_HOST+`api/getPubs`);
         const data = await res.json();
         if(data.status === 'ok'){
             setPubs(data.results);

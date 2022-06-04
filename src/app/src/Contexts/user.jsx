@@ -1,5 +1,4 @@
 import React, {useEffect, useMemo, useContext, useState} from 'react';
-import bcrypt from 'bcryptjs';
 
 const UserContext = React.createContext(null);
 
@@ -8,37 +7,39 @@ export function UserProvider(props) {
     const [token, setToken] = useState('');
 
     const fetchUser = () => {
-        if(document.cookie.includes('auth-token')){
-            const cookies = document.cookie.split(';');
-            cookies.map(cookie => {
-                if(cookie.includes('auth-token')){
-                    const token = cookie.split('=').pop();
-                    setToken(token);
-                    fetch(process.env.REACT_APP_HOST+'api/authenticate',{
-                        headers: {
-                            'auth-token': token,
-                            'content-type': 'application/json'
-                        }
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if(data.status === 'ok') {
-                            setUser(data.resUser);
-                        }else{
-                            document.cookie = 'auth-cookie=;max-age=0';
-                            setUser({errors: ['token invalido']})
-                        }
-                    })
+        if(token && Object.keys(userState).length === 0){
+            fetch(process.env.REACT_APP_SERVER+'api/authenticate',{
+                headers: {
+                    'auth-token': token,
+                    'content-type': 'application/json'
                 }
             })
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'ok') {
+                    setUser(data.resUser);
+                    if(!userState.profilePhoto) userState.profilePhoto = 'uploads/profilePhotos/default.jpg';
+                }else{
+                    document.cookie = 'auth-token=;secure;max-age=0;SameSite=None';
+                }
+            });
         }
+           
     }
 
-    useEffect(() => {
-        fetchUser();
-    }, [document.cookie, window.location])
+    const getToken = () => {
+        const cookies = document.cookie.split(';');
+        cookies.forEach(c => {
+            if(c.includes('auth-token')){
+                setToken(c.split('=').pop());
+            }
+        })
+    }
+
 
     const value = useMemo(() => {
+        getToken();
+        fetchUser();
         return ({
             userState,
             token

@@ -16,7 +16,7 @@ export function Unlogged () {
 
         const {user, password, remember} = document.forms[0];
 
-        const res = await fetch(`http://localhost:8080/api/login`,{
+        const res = await fetch(process.env.REACT_APP_SERVER+`api/login`,{
             method: 'POST',
             body: JSON.stringify({
                 user: user.value, 
@@ -27,13 +27,14 @@ export function Unlogged () {
             }
         })
         const data = await res.json();
+        console.log(data)
             if (data.errors){
                 setErrors(data.errors)
             }else{
                 if(remember.checked){
-                    document.cookie = "auth-token=" + data.token + ";max-age" + 60*60*24*365*100 + ";secure";
+                    document.cookie += "auth-token=" + data.token + ";max-age" + 60*60*24*365*100 + ";secure";
                 }else{
-                    document.cookie = "auth-token=" + data.token + ";secure";
+                    document.cookie += "auth-token=" + data.token + ";secure";
                 }
                 window.location.reload();
             }

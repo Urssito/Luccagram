@@ -44,8 +44,11 @@
     "query-string": "^7.0.1",
     "request": "^2.88.2",
     "sharp": "^0.29.3",
+    "socket.io": "^4.5.1",
     "timeago.js": "^4.0.2",
-    "url-parse": "^1.5.3"
+    "update-dotenv": "^1.1.1",
+    "url-parse": "^1.5.3",
+    "web-push": "^3.5.0"
   },
   "bugs": {
     "url": "https://github.com/urssito/luccagram/issues"

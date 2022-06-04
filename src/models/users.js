@@ -1,7 +1,6 @@
 const mongo = require("mongoose"),
       { Schema } = mongo,
-      bcrypt = require("bcryptjs"),
-      path = require("path");
+      bcrypt = require("bcryptjs")
 
 
 // esquema de usuario
@@ -13,13 +12,10 @@ const usuario = new Schema({
     email: {type:String, required: true},
     date: {type: Date, default: Date.now},
     description: {type: String, required: true, default: "hola!"},
-    followers: [{type: String, required: false}],
-    Google: {
-        drivePath: {type: String, required: false},
-        profilePicId: {type: String, required: false, default: ''}
-    },
-    likes: [{type: String, required: false}]
-
+    followers: [{type: String, required: true, default: []}],
+    follows: [{type: String, required: true, default: []}],
+    profilePic: {type: String, required: true, default: 'uploads/profilePhotos/default.jpg'},
+    likes: [{type: String, required: true, default: []}]
 }, {
     collection: "users"
 });

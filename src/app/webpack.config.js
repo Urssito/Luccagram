@@ -11,7 +11,7 @@ const webpack = {
         publicPath: '/'
     },
     resolve: {
-        extensions: ['.js', '.jsx'],
+        extensions: ['.js', '.jsx', 'ts', 'tsx'],
         fallback: {'http': require.resolve('stream-http')}
     },
     module:{
@@ -19,7 +19,6 @@ const webpack = {
             {
                 test: /\.jsx?$/,
                 include: [path.resolve(__dirname,'src')],
-                exclude: [path.resolve(__dirname,'node_modules')],
                 use:{
                     loader: 'babel-loader',
                     options: {
@@ -36,7 +35,11 @@ const webpack = {
         new html({
             template: './src/index.html'
         })
-    ]
+    ],
+    node: {
+        fs: 'empty'
+    },
+    target: 'node'
 }
 
 module.exports = webpack;

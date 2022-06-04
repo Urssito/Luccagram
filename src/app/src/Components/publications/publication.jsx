@@ -13,7 +13,7 @@ function Publication ({pubs}){
                             <h5 className="publication-header">
                                 <div>
                                     <a href={'/user/' + pub.user} className="user">
-                                        <img className="profilePhoto" src={pub.profilePic ? 'http://drive.google.com/uc?export=view&id='+pub.profilePic : '/img/main/profilePhoto.jpg'} alt={pub.user} />
+                                        <img className="profilePhoto" src={process.env.REACT_APP_SERVER+pub.profilePic} alt={pub.user} />
                                         <b>{pub.user}</b>
                                     </a>
                                 </div>
@@ -39,11 +39,13 @@ function Publication ({pubs}){
 }
 
 function Like({i, user, pubID, likesArray, token}) {
-    const [liked, setLiked] = useState(false);
-    const [likes, setLikes] = useState([...likesArray] || []);
+    const [liked, setLiked] = useState(null);
+    const [likes, setLikes] = useState(likesArray.length);
 
     const likeCheckPost = async () => {
-        const res = await fetch('http://localhost:8080/api/like', {
+        setLiked(!liked)
+        liked ? setLikes(likes - 1) : setLikes(likes+1);
+        const res = await fetch(process.env.REACT_APP_SERVER+'api/like', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -54,29 +56,27 @@ function Like({i, user, pubID, likesArray, token}) {
             })
         });
         const data = await res.json();
-        setLikes(data.totalLikes);
-        if(data.totalLikes.length > likes.length){
-            user.likes.push(pubID);
-        }else{
-            for(let i = 0;i<user.likes.length;i++){
-                if(user.likes[i] == pubID){
-                    user.likes.splice(i,1);
-                }
-            }
+        if(data.totalLikes.length > likes){
+            setLikes(likes+1);
+            setLiked(true)
+        }else if(data.totalLikes.length < likes){
+            setLikes(likes-1);
+            setLiked(false);
         }
     }
-    
-    useEffect(() => {
+
+    const getLikes = () => {
         if(user.likes){
-            if(likes.length === 0){
-                setLiked(false)
-            }
             if(user.likes.includes(pubID)){
                 setLiked(true)
             }else{
                 setLiked(false)
             }
         }
+    }
+    
+    useEffect(() => {
+        if(liked === null)getLikes();
     }, [likes, liked, likesArray, user]);
 
     return(
@@ -104,7 +104,7 @@ function Like({i, user, pubID, likesArray, token}) {
                 </i>
                 <span
                     className='interaction-text disable-select'
-                    id={'likeText'+ i}>{likes.length}
+                    id={'likeText'+ i}>{likes}
                 </span>
             </label>
         </div>

@@ -3,16 +3,15 @@ import ErrorMsg from '../partials/error';
 import { useUser } from '../../Contexts/user';
 
 function SignUp() {
-    const {setUser, setToken} = useUser()
-    const [errors, setErrors] = useState(null)//array
+    const [errors, setErrors] = useState([])
 
     const signUp = async (e) => {
         e.preventDefault()
         
-        setErrors(null)
+        setErrors([])
         const {user, password, confirmPassword, email} = document.forms[0];
 
-        const res = await fetch(`http://localhost:8080/api/signup`,{
+        const res = await fetch(process.env.REACT_APP_SERVER+`api/signup`,{
             method: 'POST',
             body: JSON.stringify({
                 user: user.value, 
@@ -25,16 +24,12 @@ function SignUp() {
             }
         });
         const data = await res.json();
-        console.log(data)
 
         if(data.errors){
             setErrors(data.errors);
         }else{
-            setUser(data.user);
-            setToken(data.token);
-            sessionStorage.setItem('userState', JSON.stringify(data.user));
-            sessionStorage.setItem('token', JSON.stringify(data.token));
-            window.location.pathname = '/';
+            document.cookie = "auth-token=" + data.token + ";secure;SameSite=None";
+            window.location.href = process.env.REACT_APP_HOST;
         }
 
     }

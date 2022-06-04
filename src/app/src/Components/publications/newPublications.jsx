@@ -6,12 +6,11 @@ function NewPub({getPubs}) {
     const {userState} = useUser()
     const [token, setToken] = useState(null);
     const [errors, setErrors] = useState(null);
-    const profilePic = userState.profilePicId ? 'http://drive.google.com/uc?export=view&id='+userState.profilePicId : '/img/main/profilePhoto.jpg'
 
     const sendPub = async () => {
         const {publication} = document.forms[0];
         console.log(publication.value)
-        const res = await fetch('http://localhost:8080/api/upload', {
+        const res = await fetch(process.env.REACT_APP_SERVER+'api/upload', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
@@ -28,6 +27,7 @@ function NewPub({getPubs}) {
             setErrors(data.errors);
         }else{
             getPubs();
+            document.getElementById('textareaNewPub').value = '';
         }
     }
 
@@ -46,7 +46,7 @@ function NewPub({getPubs}) {
             <form>
                 <div id="header-new-pub">
                     <div id="prof-pic-new-pub">
-                        <img className="profilePhoto" src={profilePic} alt="urssito"></img>
+                        <img className="profilePhoto" src={userState ? process.env.REACT_APP_SERVER+userState.profilePic : ''} alt="urssito"></img>
                     </div>
                     <div id="textarea-new-pub">
                         <textarea className="textarea" placeholder="¿Qué estás pensando?" name="publication" id="textareaNewPub"></textarea>

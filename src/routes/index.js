@@ -1,45 +1,16 @@
 const express = require("express");
 const router = express.Router();
-const fs = require("fs");
-const path = require("path");
 const { isAuthenticated } = require("../helpers/auth");
-const bcrypt = require('bcryptjs');
 
 const M_publicacion = require("../models/publications");
 const objUsers = require("../models/users");
-const passport = require('passport');
-const { default: cluster } = require("cluster");
 
 router.get("/api/home", async(req, res) => {
-    const mongodata = path.join(__dirname,'..','mongoData.json');
-
-    if(!fs.existsSync(mongodata)){
-            
-        const drive = require("../config/googleAPI");
-
-        drive.files.get({
-            fileId: '1weAzflppbIqXxLYi4hVCHqAmo5l3FFaS',
-            alt: 'media'
-        }).then(function(success){
-
-            let uri = success.data;
-            
-            if(req.hostname.split(':')[0] != 'localhost'){
-                uri = uri.uri.splice(0,1);
-            }
-
-
-            fs.writeFileSync(mongodata, JSON.stringify(uri));
-        });
-    }
-
-    require("../database")
     if(req.user){
     const publications = await M_publicacion.find().lean().sort({date: "desc"});
     let user = null
     
-    user = JSON.parse(JSON.stringify(req.user));
-    return res.json({ publications, objuser });
+    return res.json({ publications });
     }else{
         return res.json({});
     }
@@ -91,6 +62,7 @@ router.post('/api/home', async (req,res) => {
             for(let i = 0;i<likes.length;i++){
                 if(likes[i] == req.body.user){
                     likes.splice(i,1);
+                    break;
                 }
             }
         }
@@ -108,7 +80,6 @@ router.get("/api/authenticate", isAuthenticated, async (req, res) => {
     let resUser = null;
     if(userdb){
         resUser = await JSON.parse(JSON.stringify(userdb));
-        resUser.profilePicId = resUser.Google.profilePicId;
         delete resUser['password'];
         delete resUser['_id']
         delete resUser['Google']

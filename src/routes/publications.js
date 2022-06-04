@@ -33,7 +33,7 @@ router.post("/api/upload", isAuthenticated, async(req, res) => {
         const newPublication = new objPublication({publication});
         newPublication.userId = userdb.id;
         newPublication.user = userdb.user;
-        if(userdb.Google.profilePicId) newPublication.profilePic = userdb.Google.profilePicId;
+        newPublication.profilePic = userdb.profilePic;
         await newPublication.save();
         res.status(203).json({status: 'ok'})
 
@@ -94,6 +94,6 @@ router.post('/api/like', isAuthenticated, async(req, res) => {
     await objPublication.findOneAndUpdate({_id:req.body.pubID},publication);
     await objUsers.findByIdAndUpdate(req.user, userdb)
     res.json({totalLikes: likes});
-})
+});
 
 module.exports = router;

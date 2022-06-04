@@ -1,7 +1,7 @@
 const users = require("../models/users");
 const publications = require("../models/publications");
 const path = require('path');
-require('dotenv').config({path: path.join(__dirname, '..', '..', '.env')})
+const updateEnv = require('update-dotenv');
 
 const userData = JSON.stringify(users.schema.obj);
 const pubData = JSON.stringify(publications.schema.obj);
@@ -16,6 +16,7 @@ async function updateModels(schema,schemaString){
     if(schema.schema.obj.password){
         schemaName = "USER_SCHEMA"
     }
+    let schemaUpdated = [];
 
     rawData.forEach(key => {
         if(key.indexOf("required") === -1 && key.indexOf("default") === -1){
@@ -24,7 +25,7 @@ async function updateModels(schema,schemaString){
     });
     schemaKeys = schemaKeys.slice(0, schemaKeys.length-1)
 
-    if(schemaKeys.length < process.env[schemaName].split(',').length){
+    if(schemaKeys.length < JSON.parse(process.env[schemaName]).length){
 
         await schema.find((err,results)=>{
             if(err) console.error;
@@ -45,6 +46,10 @@ async function updateModels(schema,schemaString){
                             let found = schemaKeys.includes(key);
                             if(!found){
                                 delete objUpdated[i][key];
+                            }else{
+                                if(!schemaUpdated.includes(key)){
+                                    schemaUpdated.push(key)
+                                }
                             }
                         }
                     });
@@ -58,6 +63,10 @@ async function updateModels(schema,schemaString){
                 if(err) console.error(err);
             });                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        
         });
-        console.log("database updated!\n", process.env.USER_SCHEMA.split(','))
+        process.env[schemaName] = schemaUpdated;
+        updateEnv({
+            [schemaName]: JSON.stringify(schemaUpdated)
+        }).then((done) => console.log('listo: ', done))
+        console.log("database updated!\n", process.env[schemaName].split(','))
     }
 }

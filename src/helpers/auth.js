@@ -10,10 +10,10 @@ helpers.isAuthenticated = async(req,res, next) =>{
         next();
     }catch(err){
         if(!token) {
-            console.log('no hay token');
+            return res.status(400).json({status: 'error', error: 'no se encontró un token, pruebe logueandose de nuevo.'});
         }
         else{
-            return res.status(400).json({status: 'error', error: 'invalid token'});
+            return res.status(400).json({status: 'error', error: 'token inválido'});
         }
     }
 };
