@@ -1,6 +1,5 @@
-import { token } from 'morgan';
 import React, { useEffect, useState } from 'react'
-import { async } from 'regenerator-runtime';
+import { useSocket } from '../../Contexts/socket.jsx';
 import {useUser} from '../../Contexts/user.jsx'
 import Aside from '../main/aside.jsx';
 import Header from '../main/Header'
@@ -8,6 +7,7 @@ import Loading from '../partials/loading.jsx';
 import Publication from '../publications/publication.jsx'
 
 function Profile() {
+    const {socket} = useSocket();
     const {userState, token} = useUser();
     const [user, setUser] = useState(null);
     const [pubs, setPubs] = useState(null)
@@ -47,6 +47,7 @@ function Profile() {
     }
 
     const follow = async () => {
+        socket.emit('follow', [userState.user, user.user]);
             const res = await fetch(process.env.REACT_APP_SERVER+'api/follow', {
                 method: 'POST',
                 headers: {

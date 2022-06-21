@@ -1,36 +1,54 @@
-const {Server} = require('socket.io');
-
-const io = new Server({
-    cors: {
-        origin: process.env.CLIENT_HOST,
-    }
-});
+const modelUser = require('../models/users');
+const modelNoti = require('../models/notifications');
 
 let onlineUsers = [];
 
-const addUser = (user, socketId) => {
-    !onlineUsers.some(onlineUser => onlineUser.user === user) &&
-    onlineUsers.push({user, socketId});
-};
+module.exports = (io) => {
+    io.on('connection', (socket) => {
 
-const removeUser = (socketId) => {
-    onlineUsers = onlineUsers.filter(user => user.socketId !== socketId);
-};
+        socket.on('newUser', (data) => {
+            const [user, userId, followers] = data;
 
-const getUser = (user) => {
-    return onlineUsers.find(onlineUser => onlineUser.user === user);
-};
+            if(!onlineUsers.some(onUser => onUser.user === user)){
+                const onlineUser = {
+                    user,
+                    userId,
+                    followers
+                };
 
-io.on('connection', (socket) => {
+                onlineUsers.push(onlineUser);
+                console.log('user connected:', user)
+            }
+        });
 
-    socket.on('newUser', (user) => {
-        addUser(user, socket.id);
+        socket.on('follow', (data) => {
+            const [follower, following] = data;
+
+            socket.join(`${following} followers`);
+            console.log(follower, 'siguió a', following);
+            
+        });
+
+        socket.on('notification', (data) => {
+            console.log('new notification in progress')
+            const {transmitter, title, description, receiver} = data;
+            console.log(data)
+
+            const newNoti = new modelNoti({
+                transmitter,
+                title,
+                description,
+                receiver
+            });
+            newNoti.save();
+            socket.broadcast.emit('newNotification', data)
+        });
+
+        socket.on('disconnected', (user) => {
+            console.log('disconected:', user)
+            onlineUsers = onlineUsers.filter(onUser => onUser.user !== user);
+        })
+
     });
-
-    socket.on('removeUser', () => {
-        removeUser(socket.id);
-    });
-
-});
-
-io.listen(8081);
+    io.listen(8081);
+};

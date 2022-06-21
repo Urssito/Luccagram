@@ -83,6 +83,7 @@ router.get("/api/authenticate", isAuthenticated, async (req, res) => {
         delete resUser['password'];
         delete resUser['_id']
         delete resUser['Google']
+        resUser.id = userdb.id
 
         res.json({status: 'ok', resUser});
     }

@@ -79,7 +79,8 @@ router.post('/api/login', async (req, res) => {
 
         resUser = await JSON.parse(JSON.stringify(userdb));
         delete resUser['password'];
-        delete resUser['_id']
+        delete resUser['_id'];
+        resUser.id = userdb.id
         match = await bcrypt.compare(password, userdb.password);
     
     }else{
@@ -93,7 +94,6 @@ router.post('/api/login', async (req, res) => {
         res.json({errors})
     }
     else{
-
 
         const token = jwt.sign({
             auth: userdb.id

@@ -1,11 +1,14 @@
 import React from 'react'
 import { useUser } from '../../Contexts/user';
+import { useSocket } from '../../Contexts/socket';
 
 function AsideL() {
+    const {socket} = useSocket();
     const {userState} = useUser();
     const height = window.innerHeight;
 
     const logout = () => {
+        socket.emit('disconnected', userState.user)
         document.cookie.split(';').map(c => {
             if(c.indexOf('auth-token') !== -1){
                 document.cookie = 'auth-token=;max-age=0;path=/'
@@ -13,8 +16,6 @@ function AsideL() {
         });
         window.location.pathname='/'
     }
-
-    function socket(){}
 
     return (
         <div id='header' style={{height: `${height-57}px`}}>
@@ -36,11 +37,14 @@ function AsideL() {
                         </span>
                         Perfil
                     </a>
-                    <a href='' id="Save-btn" className='a-normalize header-btn'>
-                        <span className="material-icons">notifications</span>
+                    <a href='/notifications' id="notification-btn" className='a-normalize header-btn'>
+                        <span className="material-icons">
+                        <span className='disabled' id="new-notification" />
+                            notifications
+                            </span>
                         Notificaciones
                     </a>
-                    <a onClick={socket} href='/tema' id="theme-btn" className='a-normalize header-btn'>
+                    <a href='/tema' id="theme-btn" className='a-normalize header-btn'>
                     <span className="material-icons">brush</span>
                         Tema
                     </a>

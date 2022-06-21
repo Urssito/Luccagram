@@ -15,7 +15,9 @@ const usuario = new Schema({
     followers: [{type: String, required: true, default: []}],
     follows: [{type: String, required: true, default: []}],
     profilePic: {type: String, required: true, default: 'uploads/profilePhotos/default.jpg'},
-    likes: [{type: String, required: true, default: []}]
+    likes: [{type: String, required: true, default: []}],
+    newNotifications: [{type: String, required: true, default: []}],
+    oldNotifications: [{type: String, required: true, default: []}],
 }, {
     collection: "users"
 });

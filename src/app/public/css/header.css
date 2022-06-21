@@ -60,6 +60,15 @@ nav{
     background-color: #d5d5d5;
 }
 
+#new-notification{
+    position: absolute;
+    height: 7px;
+    width: 7px;
+    border-radius: 100%;
+    transform: translate(15px, 3px);
+    background-color: #f00;
+}
+
 #account{
     display: flex;
     justify-content: center;

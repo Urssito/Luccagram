@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NewPub } from "../publications/newPublications";
 import Publication from "../publications/publication";
 import Header from '../main/Header'
 import "regenerator-runtime/runtime";
 import Aside from "./aside";
 import Loading from "../partials/loading";
+import { useUser } from "../../Contexts/user";
 
 function Home() {
+    const {userState} = useUser();
     const [pubs, setPubs] = useState([]);
-    const [loading, setLoading] = useState(true)
+    const [loading, setLoading] = useState(true);
 
     const getPubs = async () => {
         const res = await fetch(process.env.REACT_APP_HOST+`api/getPubs`);
@@ -28,7 +30,7 @@ function Home() {
 
     useEffect(() => {
         getPubs();
-    }, []);
+    }, [userState]);
 
     if(!loading){
         return(

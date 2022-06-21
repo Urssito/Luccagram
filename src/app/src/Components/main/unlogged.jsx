@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Socket } from '../../Contexts/socket';
 
 import { useUser } from '../../Contexts/user';
 import ErrorMsg from '../partials/error';
@@ -31,6 +32,8 @@ export function Unlogged () {
             if (data.errors){
                 setErrors(data.errors)
             }else{
+                console.log(data.user.id)
+                //Socket.emit('newUser', [data.user.user, data.user.id, data.user.followers]);
                 if(remember.checked){
                     document.cookie += "auth-token=" + data.token + ";max-age" + 60*60*24*365*100 + ";secure";
                 }else{

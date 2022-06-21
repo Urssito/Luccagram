@@ -1,15 +1,16 @@
 import React, { useState, useContext, useEffect } from "react";
+import { useSocket } from "../../Contexts/socket";
 import { useUser } from "../../Contexts/user";
 import ErrorMsg from "../partials/error";
 
 function NewPub({getPubs}) {
-    const {userState} = useUser()
+    const {userState} = useUser();
+    const {socket} = useSocket();
     const [token, setToken] = useState(null);
     const [errors, setErrors] = useState(null);
 
     const sendPub = async () => {
         const {publication} = document.forms[0];
-        console.log(publication.value)
         const res = await fetch(process.env.REACT_APP_SERVER+'api/upload', {
             method: 'POST',
             headers: {
@@ -21,24 +22,29 @@ function NewPub({getPubs}) {
             })
         });
         const data = await res.json();
-        console.log(data)
 
         if(data.errors){
             setErrors(data.errors);
         }else{
             getPubs();
+            socket.emit('notification', {
+                transmitter: userState.user,
+                title: 'newPub',
+                description: publication.value,
+                receiver: userState.followers
+            });
             document.getElementById('textareaNewPub').value = '';
         }
     }
 
     useEffect(() => {
-    const cookies = document.cookie.split(';')
-    cookies.map(cookie => {
-        if(cookie.indexOf('auth-token') !== -1){
-            setToken(cookie.split('=').pop());
-        }
-    })
-    })
+        const cookies = document.cookie.split(';');
+        cookies.map(cookie => {
+            if(cookie.indexOf('auth-token') !== -1){
+                setToken(cookie.split('=').pop());
+            }
+        });
+    });
 
     return(
         <div id="new-pub">

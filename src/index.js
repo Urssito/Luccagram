@@ -2,12 +2,13 @@ const express = require("express");
 const override = require("method-override");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-const flash = require("connect-flash");
 const path = require("path");
 const passport = require("passport");
 const bodyParser = require("body-parser");
 const cors = require('cors');
 const morgan = require("morgan");
+const {Server} = require('socket.io')
+const Sockets = require('./config/socket.io');
 require('dotenv').config();
 
 // Initializations
@@ -20,7 +21,6 @@ require("./helpers/updateSchemas.js");
 app.set('trust proxy', 1);
 app.set("port", process.env.PORT || 8080);
 const hosts = ['http://localhost:8080/', 'http://localhost:3000', 'https://luccagram.herokuapp.com'];
-require('./config/webPush');
 
 // Middlewares
 app.use(bodyParser.urlencoded({extended:false}));
@@ -49,8 +49,7 @@ app.use(cors({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(flash());
-app.use(morgan('dev'))
+//app.use(morgan('dev'))
 
 // Routes
 app.use(require("./routes/index"));
@@ -66,6 +65,10 @@ const server = app.listen(app.get("port"), () => {
     console.log("server on port", app.get("port"));
 });
 
-module.exports = {server};
+const io = new Server(server,{
+    cors:{
+        origin: process.env.CLIENT_HOST
+    }
+});
 
-require('./config/socket.io');
+Sockets(io);

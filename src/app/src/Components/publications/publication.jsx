@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import "regenerator-runtime/runtime";
+import { Socket } from '../../Contexts/socket';
 import { useUser } from '../../Contexts/user';
 
 function Publication ({pubs}){
@@ -29,6 +30,7 @@ function Publication ({pubs}){
                                 user={userState}
                                 pubID={pub._id} 
                                 likesArray={pub.likes}
+                                usersPub={pub.user}
                                 token={token} />
                             </div>
                         </div>
@@ -38,7 +40,7 @@ function Publication ({pubs}){
         )
 }
 
-function Like({i, user, pubID, likesArray, token}) {
+function Like({i, user, pubID, likesArray, token, usersPub}) {
     const [liked, setLiked] = useState(null);
     const [likes, setLikes] = useState(likesArray.length);
 
@@ -58,7 +60,8 @@ function Like({i, user, pubID, likesArray, token}) {
         const data = await res.json();
         if(data.totalLikes.length > likes){
             setLikes(likes+1);
-            setLiked(true)
+            setLiked(true);
+            //Socket.emit('like', usersPub)
         }else if(data.totalLikes.length < likes){
             setLikes(likes-1);
             setLiked(false);
