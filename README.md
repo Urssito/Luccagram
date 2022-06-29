@@ -1,6 +1,6 @@
 # luccagram
 
-#### Luccagram is a social network built with Express.js, React and MongoDB. developed by Lucca Urso, a 20 year old Argentine programmer as a personal project.
+#### Luccagram is a social network (currently under development) built with Express.js, React and MongoDB. developed by Lucca Urso, a 20 year old Argentine programmer as a personal project.
 
 ## How to launch  
  
