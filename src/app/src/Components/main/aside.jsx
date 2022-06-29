@@ -9,7 +9,7 @@ function Aside() {
                 <input id="search-input" type="text" placeholder="Buscar"/>
             </div>
             <div id="chats">
-                HOLA AQUI VAN A IR LOS CHATS UWU OWO EWE
+                Chats (pendiente)
             </div>
         </div>
     </div>
