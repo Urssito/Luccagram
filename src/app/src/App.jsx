@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Home from "./Components/main/home";
 import Profile from "./Components/users/profile";
 import Unlogged from "./Components/main/unlogged";
@@ -8,6 +8,7 @@ import SignUp from './Components/users/signup';
 import {SocketProvider, useSocket} from './Contexts/socket'
 import EditProfile from './Components/users/editProfile';
 import Notifications from './Components/users/notifications';
+import NotiMsg from './Components/partials/notification'
  
 export default () => <UserProvider props={null}>
     <SocketProvider props={null}>
@@ -18,12 +19,12 @@ export default () => <UserProvider props={null}>
 export function App () {
     const {userState, token} = useUser();
     const {socket} = useSocket();
+    const [notifications, setNotifications] = useState(null);
 
     useEffect(() => {
         socket.on('newNotification',(data) => {
             const {transmitter, title, description, receiver} = data;
-            console.log(receiver)
-            if(receiver.includes(userState.id))alert(`${transmitter} subió una nueva publicación: \n ${description}`)
+            if(receiver.includes(userState.id))setNotifications(...notifications, {transmitter, title, description})
         });
     }, [userState])
 
@@ -35,6 +36,7 @@ export function App () {
 
     return (
         <BrowserRouter>
+            <NotiMsg notification={{transmitter:'urssito', title:'publicacion', description:'hola!'}} />
             <Routes>
                 <Route path="/" element={
                     token ? 

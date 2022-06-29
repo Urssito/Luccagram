@@ -3,10 +3,11 @@ const { Schema } = mongo;
 
 const notification = new Schema({
 
-    transmitter: {type:String, required:true},
+    transmitter: [{type:String, required:true}],
     title: {type:String, required:true},
     description: {type:String, required:true},
     receiver: [{type:String, required:true}],
+    date: {type: Date, default: Date.now},
 
 });
 
