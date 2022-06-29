@@ -1,6 +1,14 @@
 # luccagram
 
-#### Luccagram is a social network (currently under development) built with Express.js, React and MongoDB. developed by Lucca Urso, a 20 year old Argentine programmer as a personal project.
+Luccagram is a social network (currently under development) built with Express.js, React and MongoDB. developed by Lucca Urso, a 20 year old Argentine programmer as a personal project.
+
+### freatures
+- Coded on MERN Stack
+- Real time notifications with sockets
+- Use React Hooks
+- working with AJAX
+- Intelligent data management in real time
+- optimal middleware integration
 
 ## How to launch  
  
@@ -14,19 +22,19 @@
     npm install
     ```
 
-3. set enviroment variables
-    - make .env file on root directory
-    - set values of the following variables:
+3. Set enviroment variables
+    - Make .env file on root directory
+    - Set values of the following variables:
         ```env
         CLIENT_HOST=  // server host url
         MONGO_DB=     // mongo database uri
         ```
-    - add this variable:
+    - Add this variable:
         ```env
         DEFAULT_PROFILE_PHOTO=src/app/public/img/main/profilePhoto.jpg
         ```
 
-4. set React enviroment variables
+4. Set React enviroment variables
     - make .env file on ``` src/app```
     - set this values
         ```env
@@ -34,12 +42,12 @@
         REACT_APP_SERVER= // server host url
         REACT_APP_SOCKET= // socket server url
 
-5. on root directory run:
+5. On root directory run:
     ```shell
     npm run dev
     ```
 
-6. on ```src/app``` run:
+6. On ```src/app``` run:
     ```shell
     npm run start
     ```
