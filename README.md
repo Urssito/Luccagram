@@ -4,6 +4,7 @@ Luccagram is a social network (currently under development) built with Express.j
 
 ### freatures
 - Coded on MERN Stack
+- Login with JSON Web Token
 - Real time notifications with sockets
 - Use React Hooks
 - working with AJAX
